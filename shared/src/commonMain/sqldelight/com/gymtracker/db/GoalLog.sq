@@ -1,0 +1,30 @@
+CREATE TABLE goal_configs (
+    goalType    TEXT NOT NULL PRIMARY KEY,
+    targetValue INTEGER NOT NULL
+);
+
+CREATE TABLE goal_logs (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    goalType    TEXT NOT NULL,
+    dateKey     TEXT NOT NULL,
+    actualValue INTEGER NOT NULL,
+    targetValue INTEGER NOT NULL,
+    achieved    INTEGER NOT NULL DEFAULT 0,
+    UNIQUE(goalType, dateKey)
+);
+
+getConfig:
+SELECT * FROM goal_configs WHERE goalType = ?;
+
+setConfig:
+INSERT OR REPLACE INTO goal_configs (goalType, targetValue) VALUES (?, ?);
+
+getLog:
+SELECT * FROM goal_logs WHERE goalType = ? AND dateKey = ?;
+
+insertOrReplaceLog:
+INSERT OR REPLACE INTO goal_logs (id, goalType, dateKey, actualValue, targetValue, achieved)
+VALUES (?, ?, ?, ?, ?, ?);
+
+getRecentLogs:
+SELECT * FROM goal_logs WHERE goalType = ? ORDER BY dateKey DESC LIMIT ?;

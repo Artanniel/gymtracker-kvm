@@ -1,0 +1,17 @@
+CREATE TABLE checklist_logs (
+    id        INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    itemId    TEXT NOT NULL,
+    dateKey   TEXT NOT NULL,
+    completed INTEGER NOT NULL DEFAULT 0,
+    UNIQUE(itemId, dateKey)
+);
+
+getForDate:
+SELECT * FROM checklist_logs WHERE dateKey = ?;
+
+getOne:
+SELECT * FROM checklist_logs WHERE itemId = ? AND dateKey = ? LIMIT 1;
+
+insertOrReplace:
+INSERT OR REPLACE INTO checklist_logs (id, itemId, dateKey, completed)
+VALUES (?, ?, ?, ?);

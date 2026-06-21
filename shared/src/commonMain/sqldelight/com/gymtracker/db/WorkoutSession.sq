@@ -1,0 +1,32 @@
+CREATE TABLE workout_sessions (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    workoutId   TEXT NOT NULL,
+    workoutName TEXT NOT NULL,
+    date        INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
+    notes       TEXT NOT NULL DEFAULT ''
+);
+
+getAll:
+SELECT * FROM workout_sessions ORDER BY date DESC;
+
+getByWorkout:
+SELECT * FROM workout_sessions WHERE workoutId = ? ORDER BY date DESC;
+
+getLast:
+SELECT * FROM workout_sessions WHERE workoutId = ? ORDER BY date DESC LIMIT 1;
+
+getById:
+SELECT * FROM workout_sessions WHERE id = ?;
+
+insert:
+INSERT INTO workout_sessions (workoutId, workoutName, date, notes)
+VALUES (?, ?, ?, ?);
+
+update:
+UPDATE workout_sessions SET notes = ? WHERE id = ?;
+
+delete:
+DELETE FROM workout_sessions WHERE id = ?;
+
+lastInsertId:
+SELECT last_insert_rowid();
