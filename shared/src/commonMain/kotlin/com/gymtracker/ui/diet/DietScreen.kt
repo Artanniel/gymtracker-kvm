@@ -37,7 +37,10 @@ fun DietScreen() {
 
         // Banner de macros
         item {
-            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(14.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -52,11 +55,14 @@ fun DietScreen() {
         // Banner de dia completo
         if (dayComplete) {
             item {
-                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)) {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+                ) {
                     Text(
                         "🎉 Dia completo! Todas as refeições e suplementos registrados.",
                         modifier = Modifier.fillMaxWidth().padding(12.dp),
-                        color = Color.White, fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
                 }
@@ -84,7 +90,10 @@ fun DietScreen() {
         }
 
         item {
-            Card(elevation = CardDefaults.cardElevation(3.dp)) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+            ) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     DietData.supplements.forEachIndexed { i, supp ->
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -111,7 +120,10 @@ fun DietScreen() {
         }
 
         item {
-            Card(elevation = CardDefaults.cardElevation(3.dp)) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+            ) {
                 Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     DietData.guidanceTips.forEach { tip ->
                         Text("•  $tip", style = MaterialTheme.typography.bodySmall)
@@ -127,18 +139,22 @@ fun DietScreen() {
 @Composable
 fun MacroItem(value: String, label: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(value, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge, color = Color.White)
-        Text(label, style = MaterialTheme.typography.labelSmall, color = Color.White)
+        Text(value, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
     }
 }
 
 @Composable
 fun MealCard(meal: com.gymtracker.data.model.Meal, checked: Boolean, onToggle: (Boolean) -> Unit) {
-    Card(elevation = CardDefaults.cardElevation(3.dp)) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Refeição ${meal.number}", fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                    style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.onSurface)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Feita", style = MaterialTheme.typography.bodySmall)
                     Checkbox(checked = checked, onCheckedChange = onToggle)

@@ -48,11 +48,15 @@ fun HistoryScreen() {
 @Composable
 fun SessionCard(session: Workout_sessions) {
     val sdf = remember { SimpleDateFormat("dd/MM/yyyy · HH:mm", Locale.getDefault()) }
-    Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(2.dp)) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(session.workoutName, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge)
+            Text(session.workoutName, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
             Text(sdf.format(Date(session.date)), style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
+                color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 4.dp))
             if (session.notes.isNotBlank()) {
                 Text("\"${session.notes}\"", style = MaterialTheme.typography.bodySmall,
                     fontStyle = FontStyle.Italic, color = MaterialTheme.colorScheme.onSurfaceVariant,

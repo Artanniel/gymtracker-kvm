@@ -141,24 +141,25 @@ fun HomeScreen(onStartWorkout: (String) -> Unit) {
 fun WorkoutCard(workout: Workout, lastDate: Long?, onClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(3.dp)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier.size(52.dp)
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                    Text(workout.shortName, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
+                    Text(workout.shortName, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
             }
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
-                Text(workout.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge)
+                Text(workout.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
                 Text("${workout.exercises.size} exercícios", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(formatDaysAgo(lastDate), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
             }
@@ -175,22 +176,22 @@ fun ExtraWorkoutCard(workout: Workout, lastDate: Long?, status: AvailabilityStat
     }
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(3.dp),
-        border = CardDefaults.outlinedCardBorder()
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
     ) {
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Surface(
-                color = MaterialTheme.colorScheme.secondary,
+                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier.size(52.dp)
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                    Text(workout.shortName, color = MaterialTheme.colorScheme.onSecondary, fontWeight = FontWeight.Bold)
+                    Text(workout.shortName, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
                 }
             }
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
-                Text(workout.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge)
+                Text(workout.name, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
                 Text("${workout.exercises.size} exercícios", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(formatDaysAgo(lastDate), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(availText, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold,
@@ -207,28 +208,35 @@ fun DailyGoalCard(
     onEditTarget: () -> Unit
 ) {
     var input by remember(state.type) { mutableStateOf(state.actual?.toString() ?: "") }
-    Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(3.dp)) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(state.type.icon, style = MaterialTheme.typography.headlineSmall)
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(state.type.displayName, fontWeight = FontWeight.Bold)
+                    Text(state.type.displayName, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                     Text("Meta: ${state.target} ${state.type.unit}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                IconButton(onClick = onEditTarget) { Icon(Icons.Default.Edit, "Editar meta") }
+                IconButton(onClick = onEditTarget) { Icon(Icons.Default.Edit, "Editar meta", tint = MaterialTheme.colorScheme.onSurfaceVariant) }
             }
             Spacer(Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                OutlinedTextField(
+                com.gymtracker.ui.components.FitTrackTextField(
                     value = input,
                     onValueChange = { input = it },
-                    modifier = Modifier.weight(1f),
-                    label = { Text("Hoje (${state.type.unit})") },
-                    singleLine = true
+                    modifier = Modifier.weight(1f).height(50.dp),
+                    placeholder = "Hoje (${state.type.unit})",
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
                 )
                 Spacer(Modifier.width(8.dp))
-                Button(onClick = { input.toIntOrNull()?.let(onSave) }) { Text("Salvar") }
+                com.gymtracker.ui.components.FitTrackButton(
+                    text = "Salvar",
+                    onClick = { input.toIntOrNull()?.let(onSave) }
+                )
             }
             if (state.actual != null) {
                 Spacer(Modifier.height(6.dp))

@@ -34,9 +34,9 @@ fun WorkoutSessionScreen(workoutId: String, onFinished: () -> Unit) {
                     IconButton(onClick = onFinished) { Icon(Icons.Default.ArrowBack, "Voltar") }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         }
@@ -49,8 +49,8 @@ fun WorkoutSessionScreen(workoutId: String, onFinished: () -> Unit) {
             // Tip do treino
             workout?.tip?.let { tip ->
                 item {
-                    Card(colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF2CC))) {
-                        Text(tip, modifier = Modifier.padding(12.dp), style = MaterialTheme.typography.bodySmall)
+                    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+                        Text("💡 $tip", modifier = Modifier.padding(12.dp), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
@@ -58,19 +58,22 @@ fun WorkoutSessionScreen(workoutId: String, onFinished: () -> Unit) {
             // Timer de descanso
             if (timerRunning || timerSecs > 0) {
                 item {
-                    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)) {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+                    ) {
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("⏱ Descanso", color = Color.White, modifier = Modifier.weight(1f))
-                            Text(formatTimer(timerSecs), color = Color.White, fontWeight = FontWeight.Bold,
+                            Text("⏱ Descanso", color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
+                            Text(formatTimer(timerSecs), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold,
                                 style = MaterialTheme.typography.headlineSmall)
                             Spacer(Modifier.width(8.dp))
-                            OutlinedButton(
+                            Button(
                                 onClick = vm::stopTimer,
-                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
-                            ) { Text(if (timerRunning) "Parar" else "Pronto!") }
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                            ) { Text(if (timerRunning) "Parar" else "Pronto!", color = MaterialTheme.colorScheme.background) }
                         }
                     }
                 }
@@ -104,23 +107,21 @@ fun WorkoutSessionScreen(workoutId: String, onFinished: () -> Unit) {
             // Notas
             item {
                 Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
+                com.gymtracker.ui.components.FitTrackTextField(
                     value = notes,
                     onValueChange = vm::setNotes,
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Observações (sono, estresse, alimentação...)") },
-                    minLines = 2,
-                    maxLines = 4
+                    placeholder = "Observações (sono, estresse...)"
                 )
             }
 
             // Finalizar
             item {
-                Button(
+                com.gymtracker.ui.components.FitTrackButton(
                     onClick = { vm.finish(); onFinished() },
                     modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) { Text("Finalizar Treino ✓", style = MaterialTheme.typography.bodyLarge) }
+                    text = "Finalizar Treino ✓"
+                )
                 Spacer(Modifier.height(80.dp))
             }
         }
@@ -132,7 +133,10 @@ fun SetRowCard(row: SetRowUiState, onDone: (Double?, Int?) -> Unit) {
     var weightInput by remember(row.exerciseId, row.setNumber) { mutableStateOf(row.weightKg?.toString() ?: "") }
     var repsInput by remember(row.exerciseId, row.setNumber) { mutableStateOf(row.repsActual?.toString() ?: "") }
 
-    Card(elevation = CardDefaults.cardElevation(2.dp)) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+    ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val typeColor = when (row.setType) {
@@ -165,25 +169,27 @@ fun SetRowCard(row: SetRowUiState, onDone: (Double?, Int?) -> Unit) {
             }
 
             Row(modifier = Modifier.padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                OutlinedTextField(
+                com.gymtracker.ui.components.FitTrackTextField(
                     value = weightInput,
                     onValueChange = { weightInput = it },
-                    modifier = Modifier.weight(1f).padding(end = 6.dp),
-                    label = { Text("Carga (kg)") },
-                    singleLine = true
+                    modifier = Modifier.weight(1f).padding(end = 6.dp).height(50.dp),
+                    placeholder = "Carga (kg)",
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
                 )
-                OutlinedTextField(
+                com.gymtracker.ui.components.FitTrackTextField(
                     value = repsInput,
                     onValueChange = { repsInput = it },
-                    modifier = Modifier.weight(1f).padding(end = 8.dp),
-                    label = { Text("Reps") },
-                    singleLine = true
+                    modifier = Modifier.weight(1f).padding(end = 8.dp).height(50.dp),
+                    placeholder = "Reps",
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
                 )
                 Button(
                     onClick = { onDone(weightInput.toDoubleOrNull(), repsInput.toIntOrNull()) },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (row.completed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary
-                    )
+                        containerColor = if (row.completed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background,
+                        contentColor = if (row.completed) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onBackground
+                    ),
+                    modifier = Modifier.height(50.dp)
                 ) { Text(if (row.completed) "✓" else "OK") }
             }
         }
