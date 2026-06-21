@@ -1,131 +1,158 @@
-# GymTracker KMP
-
-App de acompanhamento de treino e dieta em **Kotlin Multiplatform + Compose Multiplatform**.
-
-Targets: Android · iOS · Desktop (Windows/macOS/Linux) · Web (Wasm)
+<div align="center">
+  <h1>🏋️‍♂️ GymTracker KMP</h1>
+  <p><b>Seu parceiro definitivo para treinos e dieta, construído com o poder do Kotlin Multiplatform.</b></p>
+  
+  [![Kotlin](https://img.shields.io/badge/Kotlin-2.1.20-7F52FF.svg?style=flat-square&logo=kotlin)](https://kotlinlang.org)
+  [![Compose Multiplatform](https://img.shields.io/badge/Compose-1.7.1-4285F4.svg?style=flat-square&logo=android)](https://www.jetbrains.com/lp/compose-multiplatform/)
+  [![SQLDelight](https://img.shields.io/badge/SQLDelight-2.1.0-FF4081.svg?style=flat-square&logo=sqlite)](https://cashapp.github.io/sqldelight/)
+</div>
 
 ---
 
-## Estrutura do projeto
+## 📱 Targets Suportados
 
-```
+O **GymTracker** é um aplicativo 100% nativo construído uma única vez e distribuído para múltiplas plataformas:
+
+- 🤖 **Android**
+- 🍎 **iOS** 
+- 💻 **Desktop** (Windows, macOS, Linux)
+- 🌐 **Web** (WasmGC)
+
+---
+
+## 📥 Download
+
+Você pode baixar a versão mais recente do aplicativo diretamente através dos links abaixo:
+
+* **🤖 Android APK (Debug):** [Baixar GymTracker.apk](androidApp/build/outputs/apk/debug/androidApp-debug.apk) *(Requer que o arquivo seja commitado no repositório)*
+
+---
+
+## 🏗️ Estrutura do Projeto
+
+O projeto segue a arquitetura KMP padrão, separando claramente o código comum dos entrypoints de cada plataforma.
+
+```text
 GymTrackerKMP/
-├── shared/                        # Módulo KMP: 100% da lógica e UI (Compose)
+├── shared/                        # 🧠 KMP Core: 100% da Lógica de Negócios e UI (Compose)
 │   └── src/
-│       ├── commonMain/            # Código compartilhado por todos os targets
-│       │   ├── kotlin/com/gymtracker/
-│       │   │   ├── AppDependencies.kt
-│       │   │   ├── data/{db, model, repository}
-│       │   │   ├── ui/{home, workout, history, diet}
-│       │   │   └── util/
-│       │   └── sqldelight/        # Arquivos .sq (substituem Room)
+│       ├── commonMain/            # Código compartilhado entre todos os targets (UI, Repo, DB)
 │       ├── androidMain/           # actual: AndroidSqliteDriver
 │       ├── iosMain/               # actual: NativeSqliteDriver
 │       ├── jvmMain/               # actual: JdbcSqliteDriver
 │       └── wasmJsMain/            # actual: WebWorkerDriver
 │
-├── androidApp/                    # Entrypoint Android (MainActivity)
-├── desktopApp/                    # Entrypoint Desktop (JVM + jpackage)
-├── webApp/                        # Entrypoint Web (WasmJs + webpack)
-└── iosApp/                        # Projeto Xcode (consume shared framework)
+├── androidApp/                    # 📱 Entrypoint Android (MainActivity)
+├── desktopApp/                    # 💻 Entrypoint Desktop (JVM + jpackage)
+├── webApp/                        # 🌐 Entrypoint Web (WasmJs + webpack)
+└── iosApp/                        # 🍎 Projeto Xcode (consome o shared framework)
 ```
 
 ---
 
-## Requisitos
+## 🚀 Como Buildar e Executar
 
-| Plataforma | Requisito |
+### Pré-requisitos
+| Plataforma | Ferramentas Necessárias |
 |---|---|
-| Android | Android Studio Narwhal 2025.1+ / JDK 17 |
-| iOS | macOS + Xcode 16+ + Kotlin Multiplatform plugin |
-| Desktop | JDK 17+ |
-| Web | Node.js 18+ (webpack) + navegador com WasmGC (Chrome 119+, Firefox 120+, Safari 18.2+) |
+| **Android** | Android Studio Narwhal 2025.1+ / JDK 17 |
+| **iOS** | macOS + Xcode 16+ + Plugin Kotlin Multiplatform |
+| **Desktop** | JDK 17+ |
+| **Web** | Node.js 18+ + Navegador com suporte a WasmGC (Chrome 119+, Firefox 120+, Safari 18.2+) |
 
----
+### Comandos Principais
 
-## Como buildar
+<details>
+<summary><b>🤖 Android</b></summary>
 
-### Android
 ```bash
+# Compilar e gerar o APK de debug
 ./gradlew :androidApp:assembleDebug
-# ou pelo Android Studio: Run 'androidApp'
-```
 
-### Desktop (JVM)
+# Instalar no dispositivo conectado
+adb install androidApp/build/outputs/apk/debug/androidApp-debug.apk
+```
+*Ou simplesmente clique em "Run" no Android Studio.*
+</details>
+
+<details>
+<summary><b>💻 Desktop (JVM)</b></summary>
+
 ```bash
-./gradlew :desktopApp:run                       # Roda direto
-./gradlew :desktopApp:createDistributable       # Gera distribuível nativo
-./gradlew :desktopApp:packageDeb                # .deb (Linux)
-./gradlew :desktopApp:packageMsi                # .msi (Windows)
-./gradlew :desktopApp:packageDmg                # .dmg (macOS)
-```
+# Executar a aplicação Desktop diretamente
+./gradlew :desktopApp:run                       
 
-### Web
+# Empacotamento Nativo
+./gradlew :desktopApp:createDistributable       # Gera executável stand-alone
+./gradlew :desktopApp:packageDeb                # Linux (.deb)
+./gradlew :desktopApp:packageMsi                # Windows (.msi)
+./gradlew :desktopApp:packageDmg                # macOS (.dmg)
+```
+</details>
+
+<details>
+<summary><b>🌐 Web (Wasm)</b></summary>
+
 ```bash
-./gradlew :webApp:wasmJsBrowserDevelopmentRun   # Servidor dev com hot reload
-./gradlew :webApp:wasmJsBrowserDistribution     # Build de produção → webApp/build/dist/
-```
+# Servidor de desenvolvimento com Hot Reload
+./gradlew :webApp:wasmJsBrowserDevelopmentRun   
 
-### iOS
-1. Execute: `./gradlew :shared:assembleXCFramework`
-2. Abra `iosApp/iosApp.xcodeproj` no Xcode
-3. O framework KMP é linkado via direct integration (embedAndSignAppleFrameworkForXcode)
-4. Run no simulador ou device
+# Build Otimizado de Produção (Saída em webApp/build/dist/)
+./gradlew :webApp:wasmJsBrowserDistribution     
+```
+</details>
+
+<details>
+<summary><b>🍎 iOS</b></summary>
+
+1. Execute a compilação do framework:
+   ```bash
+   ./gradlew :shared:assembleXCFramework
+   ```
+2. Abra o projeto no Xcode (`iosApp/iosApp.xcodeproj`).
+3. Selecione seu Simulador ou Dispositivo e clique em **Run**.
+</details>
 
 ---
 
-## Stack técnica
+## 🛠️ Stack Tecnológica
+
+O GymTracker foi modernizado para extrair o máximo do ecossistema Kotlin:
 
 | Camada | Tecnologia |
 |---|---|
-| UI | Compose Multiplatform 1.7.x |
-| Linguagem | Kotlin 2.1.20 |
-| Banco de dados | SQLDelight 2.1.0 |
-| ViewModel | androidx.lifecycle 2.9.0 (KMP) |
-| Estado | StateFlow / collectAsState() |
-| Gráficos | Koalaplot (substituiu MPAndroidChart) |
-| Async | Kotlinx Coroutines 1.10.x |
+| **UI** | Compose Multiplatform 1.7.1 |
+| **Linguagem** | Kotlin 2.1.20 |
+| **Banco de Dados** | SQLDelight 2.1.0 (Bancos Nativos por Plataforma) |
+| **ViewModel** | `androidx.lifecycle` 2.9.0 (Suporte KMP) |
+| **Gestão de Estado**| StateFlow + `collectAsState()` |
+| **Gráficos** | Koalaplot |
+| **Assincronismo** | Kotlinx Coroutines 1.10.x |
 
 ---
 
-## Migrações feitas
+## 🔄 Histórico de Migração (Android ➡️ KMP)
 
-| Antes (Android-only) | Depois (KMP) |
-|---|---|
-| Room + DAOs | SQLDelight .sq files |
-| LiveData | StateFlow |
-| RecyclerView + Adapters | LazyColumn |
-| ViewBinding + XML | @Composable functions |
-| MPAndroidChart | Koalaplot |
-| Activity/Fragment | Screen @Composable |
+Este projeto evoluiu de um app exclusivamente Android para um projeto multiplataforma completo. Principais substituições:
 
----
-
-## Adicionando o alvo iOS (iosApp)
-
-A pasta `iosApp/` deve conter um projeto Xcode criado pelo KMP wizard em https://kmp.jetbrains.com.
-
-Configuração no Xcode (Build Phase "Run Script"):
-```bash
-cd "$SRCROOT/.."
-./gradlew :shared:embedAndSignAppleFrameworkForXcode
-```
+- `Room + DAOs` ➡️ **SQLDelight (`.sq` files)**
+- `LiveData` ➡️ **StateFlow**
+- `RecyclerView + Adapters` ➡️ **LazyColumn**
+- `ViewBinding + XML` ➡️ **@Composable Functions**
+- `MPAndroidChart` ➡️ **Koalaplot**
+- `Activity/Fragment` ➡️ **Screen @Composable (Navegação baseada em estado)**
 
 ---
 
-## Notas sobre a Web (WasmJs)
+## 📋 Roadmap e Próximos Passos
 
-- **Status**: Beta (Compose Multiplatform 1.7+)
-- O banco usa `WebWorkerDriver` (SQLDelight 2.1.0 + sql.js via Web Worker)
-- Persistência: mantida em memória por sessão (adicione OPFS ou localStorage para persistir entre sessões)
-- Requer browsers com suporte a WasmGC: Chrome 119+, Firefox 120+, Safari 18.2+
+- [ ] Integrar projeto Xcode `iosApp` via framework KMP.
+- [ ] Finalizar integração de gráficos de progresso com Koalaplot.
+- [ ] Configurar persistência Web via OPFS (Origin Private File System).
+- [ ] Configuração de pipelines de CI/CD (Fastlane / GitHub Actions).
+- [ ] Implementar AdMob (Android) e SKAdNetwork (iOS) para monetização.
 
 ---
-
-## Próximos passos sugeridos
-
-- [ ] Adicionar iosApp com projeto Xcode (via kmp.jetbrains.com wizard)
-- [ ] Implementar gráficos de progresso com Koalaplot (substituir MPAndroidChart)
-- [ ] Persistência Web com OPFS (Origin Private File System)
-- [ ] Configurar Fastlane para CI/CD Android + iOS
-- [ ] Adicionar AdMob (Android) / SKAdNetwork (iOS) para monetização
+<p align="center">
+  <i>Construído com ❤️ e Kotlin</i>
+</p>
