@@ -1,0 +1,190 @@
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Lexend%3Awght%40400%3B500%3B700%3B900&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
+
+    <title>Stitch Design</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+  <body>
+    <div
+      class="relative flex h-auto min-h-screen w-full flex-col bg-[#111811] dark justify-between group/design-root overflow-x-hidden"
+      style="--select-button-svg: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(157,184,157)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e'); font-family: Lexend, &quot;Noto Sans&quot;, sans-serif;"
+    >
+      <div>
+        <div class="flex items-center bg-[#111811] p-4 pb-2 justify-between">
+          <div class="text-white flex size-12 shrink-0 items-center" data-icon="X" data-size="24px" data-weight="regular">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+              <path
+                d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"
+              ></path>
+            </svg>
+          </div>
+          <h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Novo Exercício</h2>
+        </div>
+        <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+          <label class="flex flex-col min-w-40 flex-1">
+            <select
+              class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#293829] focus:border-none h-14 bg-[image:--select-button-svg] placeholder:text-[#9db89d] p-4 text-base font-normal leading-normal"
+            >
+              <option value="one">Selecione o exercício</option>
+              <option value="two">two</option>
+              <option value="three">three</option>
+            </select>
+          </label>
+        </div>
+        <h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Séries e Repetições</h3>
+        <div class="flex items-center gap-4 bg-[#111811] px-4 min-h-14 justify-between">
+          <p class="text-white text-base font-normal leading-normal flex-1 truncate">Séries</p>
+          <div class="shrink-0">
+            <div class="flex items-center gap-2 text-white">
+              <button class="text-base font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full bg-[#293829] cursor-pointer">-</button>
+              <input
+                class="text-base font-medium leading-normal w-4 p-0 text-center bg-transparent focus:outline-0 focus:ring-0 focus:border-none border-none [appearance:textfield] [&amp;::-webkit-inner-spin-button]:appearance-none [&amp;::-webkit-outer-spin-button]:appearance-none"
+                type="number"
+                value="3"
+              />
+              <button class="text-base font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full bg-[#293829] cursor-pointer">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 bg-[#111811] px-4 min-h-14 justify-between">
+          <p class="text-white text-base font-normal leading-normal flex-1 truncate">Repetições</p>
+          <div class="shrink-0">
+            <div class="flex items-center gap-2 text-white">
+              <button class="text-base font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full bg-[#293829] cursor-pointer">-</button>
+              <input
+                class="text-base font-medium leading-normal w-4 p-0 text-center bg-transparent focus:outline-0 focus:ring-0 focus:border-none border-none [appearance:textfield] [&amp;::-webkit-inner-spin-button]:appearance-none [&amp;::-webkit-outer-spin-button]:appearance-none"
+                type="number"
+                value="10"
+              />
+              <button class="text-base font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full bg-[#293829] cursor-pointer">+</button>
+            </div>
+          </div>
+        </div>
+        <h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Carga</h3>
+        <div class="flex items-center gap-4 bg-[#111811] px-4 min-h-14 justify-between">
+          <p class="text-white text-base font-normal leading-normal flex-1 truncate">Peso</p>
+          <div class="shrink-0">
+            <div class="flex items-center gap-2 text-white">
+              <button class="text-base font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full bg-[#293829] cursor-pointer">-</button>
+              <input
+                class="text-base font-medium leading-normal w-4 p-0 text-center bg-transparent focus:outline-0 focus:ring-0 focus:border-none border-none [appearance:textfield] [&amp;::-webkit-inner-spin-button]:appearance-none [&amp;::-webkit-outer-spin-button]:appearance-none"
+                type="number"
+                value="20"
+              />
+              <button class="text-base font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full bg-[#293829] cursor-pointer">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3 p-4">
+          <label
+            class="text-sm font-medium leading-normal flex items-center justify-center rounded-lg border border-[#3c533c] px-4 h-11 text-white has-[:checked]:border-[3px] has-[:checked]:px-3.5 has-[:checked]:border-[#17cf17] relative cursor-pointer"
+          >
+            kg
+            <input type="radio" class="invisible absolute" name="c7294524-d772-416b-940a-0be7dba79cd8" />
+          </label>
+          <label
+            class="text-sm font-medium leading-normal flex items-center justify-center rounded-lg border border-[#3c533c] px-4 h-11 text-white has-[:checked]:border-[3px] has-[:checked]:px-3.5 has-[:checked]:border-[#17cf17] relative cursor-pointer"
+          >
+            lbs
+            <input type="radio" class="invisible absolute" name="c7294524-d772-416b-940a-0be7dba79cd8" />
+          </label>
+        </div>
+        <h3 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Descanso</h3>
+        <div class="flex items-center gap-4 bg-[#111811] px-4 min-h-14 justify-between">
+          <p class="text-white text-base font-normal leading-normal flex-1 truncate">Tempo de descanso</p>
+          <div class="shrink-0">
+            <div class="flex items-center gap-2 text-white">
+              <button class="text-base font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full bg-[#293829] cursor-pointer">-</button>
+              <input
+                class="text-base font-medium leading-normal w-4 p-0 text-center bg-transparent focus:outline-0 focus:ring-0 focus:border-none border-none [appearance:textfield] [&amp;::-webkit-inner-spin-button]:appearance-none [&amp;::-webkit-outer-spin-button]:appearance-none"
+                type="number"
+                value="60"
+              />
+              <button class="text-base font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full bg-[#293829] cursor-pointer">+</button>
+            </div>
+          </div>
+        </div>
+        <p class="text-[#9db89d] text-sm font-normal leading-normal pb-3 pt-1 px-4">Segundos</p>
+        <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+          <label class="flex flex-col min-w-40 flex-1">
+            <textarea
+              placeholder="Anotar desempenho ou sensações"
+              class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-white focus:outline-0 focus:ring-0 border-none bg-[#293829] focus:border-none min-h-36 placeholder:text-[#9db89d] p-4 text-base font-normal leading-normal"
+            ></textarea>
+          </label>
+        </div>
+      </div>
+      <div>
+        <div class="flex px-4 py-3">
+          <button
+            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 flex-1 bg-[#17cf17] text-[#111811] text-base font-bold leading-normal tracking-[0.015em]"
+          >
+            <span class="truncate">Salvar</span>
+          </button>
+        </div>
+        <div class="flex gap-2 border-t border-[#293829] bg-[#1c261c] px-4 pb-3 pt-2">
+          <a class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#9db89d]" href="#">
+            <div class="text-[#9db89d] flex h-8 items-center justify-center" data-icon="House" data-size="24px" data-weight="regular">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M218.83,103.77l-80-75.48a1.14,1.14,0,0,1-.11-.11,16,16,0,0,0-21.53,0l-.11.11L37.17,103.77A16,16,0,0,0,32,115.55V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V160h32v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V115.55A16,16,0,0,0,218.83,103.77ZM208,208H160V160a16,16,0,0,0-16-16H112a16,16,0,0,0-16,16v48H48V115.55l.11-.1L128,40l79.9,75.43.11.1Z"
+                ></path>
+              </svg>
+            </div>
+            <p class="text-[#9db89d] text-xs font-medium leading-normal tracking-[0.015em]">Home</p>
+          </a>
+          <a class="just flex flex-1 flex-col items-center justify-end gap-1 rounded-full text-white" href="#">
+            <div class="text-white flex h-8 items-center justify-center" data-icon="Barbell" data-size="24px" data-weight="fill">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M200,64V192a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V136H104v56a16,16,0,0,1-16,16H72a16,16,0,0,1-16-16V64A16,16,0,0,1,72,48H88a16,16,0,0,1,16,16v56h48V64a16,16,0,0,1,16-16h16A16,16,0,0,1,200,64ZM36,72H32A16,16,0,0,0,16,88v32H8.27A8.18,8.18,0,0,0,0,127.47,8,8,0,0,0,8,136h8v32a16,16,0,0,0,16,16h4a4,4,0,0,0,4-4V76A4,4,0,0,0,36,72Zm220,55.47a8.18,8.18,0,0,0-8.25-7.47H240V88a16,16,0,0,0-16-16h-4a4,4,0,0,0-4,4V180a4,4,0,0,0,4,4h4a16,16,0,0,0,16-16V136h8A8,8,0,0,0,256,127.47Z"
+                ></path>
+              </svg>
+            </div>
+            <p class="text-white text-xs font-medium leading-normal tracking-[0.015em]">Exercícios</p>
+          </a>
+          <a class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#9db89d]" href="#">
+            <div class="text-[#9db89d] flex h-8 items-center justify-center" data-icon="Files" data-size="24px" data-weight="regular">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M213.66,66.34l-40-40A8,8,0,0,0,168,24H88A16,16,0,0,0,72,40V56H56A16,16,0,0,0,40,72V216a16,16,0,0,0,16,16H168a16,16,0,0,0,16-16V200h16a16,16,0,0,0,16-16V72A8,8,0,0,0,213.66,66.34ZM168,216H56V72h76.69L168,107.31v84.53c0,.06,0,.11,0,.16s0,.1,0,.16V216Zm32-32H184V104a8,8,0,0,0-2.34-5.66l-40-40A8,8,0,0,0,136,56H88V40h76.69L200,75.31Zm-56-32a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h48A8,8,0,0,1,144,152Zm0,32a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h48A8,8,0,0,1,144,184Z"
+                ></path>
+              </svg>
+            </div>
+            <p class="text-[#9db89d] text-xs font-medium leading-normal tracking-[0.015em]">Fichas</p>
+          </a>
+          <a class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#9db89d]" href="#">
+            <div class="text-[#9db89d] flex h-8 items-center justify-center" data-icon="PresentationChart" data-size="24px" data-weight="regular">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M216,40H136V24a8,8,0,0,0-16,0V40H40A16,16,0,0,0,24,56V176a16,16,0,0,0,16,16H79.36L57.75,219a8,8,0,0,0,12.5,10l29.59-37h56.32l29.59,37a8,8,0,1,0,12.5-10l-21.61-27H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,136H40V56H216V176ZM104,120v24a8,8,0,0,1-16,0V120a8,8,0,0,1,16,0Zm32-16v40a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm32-16v56a8,8,0,0,1-16,0V88a8,8,0,0,1,16,0Z"
+                ></path>
+              </svg>
+            </div>
+            <p class="text-[#9db89d] text-xs font-medium leading-normal tracking-[0.015em]">Progresso</p>
+          </a>
+          <a class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#9db89d]" href="#">
+            <div class="text-[#9db89d] flex h-8 items-center justify-center" data-icon="List" data-size="24px" data-weight="regular">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                <path
+                  d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"
+                ></path>
+              </svg>
+            </div>
+            <p class="text-[#9db89d] text-xs font-medium leading-normal tracking-[0.015em]">Mais</p>
+          </a>
+        </div>
+        <div class="h-5 bg-[#1c261c]"></div>
+      </div>
+    </div>
+  </body>
+</html>

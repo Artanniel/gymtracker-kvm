@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
@@ -7,10 +8,13 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/androidApp" />
-            <option value="$PROJECT_DIR$/desktopApp" />
+            <option value="$PROJECT_DIR$/apps" />
+            <option value="$PROJECT_DIR$/apps/student" />
+            <option value="$PROJECT_DIR$/apps/student/androidApp" />
+            <option value="$PROJECT_DIR$/apps/student/desktopApp" />
+            <option value="$PROJECT_DIR$/apps/student/webApp" />
+            <option value="$PROJECT_DIR$/backend" />
             <option value="$PROJECT_DIR$/shared" />
-            <option value="$PROJECT_DIR$/webApp" />
           </set>
         </option>
       </GradleProjectSettings>

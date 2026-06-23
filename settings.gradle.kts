@@ -17,4 +17,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "GymTrackerKMP"
-include(":shared", ":androidApp", ":desktopApp", ":webApp")
+include(":shared", ":apps:student:androidApp", ":apps:student:desktopApp", ":apps:student:webApp", ":backend")
