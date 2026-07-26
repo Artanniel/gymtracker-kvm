@@ -1,0 +1,76 @@
+CREATE TABLE workout_configs (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    workoutId   TEXT NOT NULL UNIQUE,
+    isArchived  INTEGER NOT NULL DEFAULT 0,
+    startDate   INTEGER,
+    endDate     INTEGER,
+    isActive    INTEGER NOT NULL DEFAULT 0,
+    coverImage  TEXT,
+    youtubeUrl  TEXT
+);
+
+getAll:
+SELECT * FROM workout_configs;
+
+getByWorkoutId:
+SELECT * FROM workout_configs WHERE workoutId = ?;
+
+getActive:
+SELECT * FROM workout_configs WHERE isActive = 1;
+
+insertOrReplace:
+INSERT OR REPLACE INTO workout_configs (workoutId, isArchived, startDate, endDate, isActive)
+VALUES (?, ?, ?, ?, ?);
+
+deactivateAll:
+UPDATE workout_configs SET isActive = 0;
+
+activate:
+UPDATE workout_configs SET isActive = 1 WHERE workoutId = ?;
+
+setArchived:
+UPDATE workout_configs SET isArchived = ? WHERE workoutId = ?;
+
+setDates:
+UPDATE workout_configs SET startDate = ?, endDate = ? WHERE workoutId = ?;
+
+setActiveState:
+UPDATE workout_configs SET isActive = ? WHERE workoutId = ?;
+
+setCoverImage:
+UPDATE workout_configs SET coverImage = ? WHERE workoutId = ?;
+
+setYoutubeUrl:
+UPDATE workout_configs SET youtubeUrl = ? WHERE workoutId = ?;
+
+insertConfig:
+INSERT INTO workout_configs (workoutId, isArchived, startDate, endDate, isActive)
+VALUES (?, 0, NULL, NULL, 0);
+
+deleteConfig:
+DELETE FROM workout_configs WHERE workoutId = ?;
+
+CREATE TABLE workout_exercises (
+    id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    workoutId       TEXT NOT NULL,
+    exerciseId      TEXT NOT NULL,
+    exerciseName    TEXT NOT NULL,
+    setNumber       INTEGER NOT NULL,
+    setType         TEXT NOT NULL,
+    repsTarget      TEXT NOT NULL,
+    suggestedWeight REAL,
+    FOREIGN KEY (workoutId) REFERENCES workout_configs(workoutId) ON DELETE CASCADE
+);
+
+getExercisesByWorkout:
+SELECT * FROM workout_exercises WHERE workoutId = ? ORDER BY exerciseId, setNumber;
+
+insertExercise:
+INSERT INTO workout_exercises (workoutId, exerciseId, exerciseName, setNumber, setType, repsTarget, suggestedWeight)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+deleteExercisesByWorkout:
+DELETE FROM workout_exercises WHERE workoutId = ?;
+
+deleteExerciseByName:
+DELETE FROM workout_exercises WHERE workoutId = ? AND exerciseName = ?;

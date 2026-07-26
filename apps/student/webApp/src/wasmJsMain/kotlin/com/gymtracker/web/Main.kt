@@ -14,7 +14,11 @@ fun main() {
     val scope = MainScope()
     scope.launch {
         AppDependencies.init(DatabaseDriverFactory())
-        ComposeViewport(document.body!!) {
+
+        val body = document.body!!
+        body.setAttribute("style", "margin:0;padding:0;width:100%;height:100%;overflow:hidden;")
+
+        ComposeViewport(body) {
             App()
         }
     }

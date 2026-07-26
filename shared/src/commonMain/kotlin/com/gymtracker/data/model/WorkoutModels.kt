@@ -36,9 +36,9 @@ enum class GoalType(
     val defaultTarget: Int,
     val step: Int
 ) {
-    STEPS("steps", "Passos Diários", "passos", "🚶", 10_000, 500),
-    SWIMMING("swimming", "Natação", "metros", "🏊", 1_000, 100),
-    WATER("water", "Água", "ml", "💧", 2_500, 250);
+    STEPS("steps", "Passos Diários", "passos", "P", 10_000, 500),
+    SWIMMING("swimming", "Natação", "metros", "N", 1_000, 100),
+    WATER("water", "Água", "ml", "A", 2_500, 250);
 
     companion object {
         fun fromId(id: String) = entries.find { it.id == id }

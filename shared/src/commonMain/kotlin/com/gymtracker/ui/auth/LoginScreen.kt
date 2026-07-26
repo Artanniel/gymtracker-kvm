@@ -1,18 +1,16 @@
 package com.gymtracker.ui.auth
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -24,10 +22,7 @@ import com.gymtracker.ui.components.FitTrackTextField
 import com.gymtracker.ui.theme.FitTrackBackground
 import com.gymtracker.ui.theme.FitTrackSurface
 import com.gymtracker.ui.theme.FitTrackTextSecondary
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
@@ -35,6 +30,8 @@ fun LoginScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -58,7 +55,7 @@ fun LoginScreen(
             )
             IconButton(onClick = { /* TODO: Help */ }) {
                 Icon(
-                    imageVector = Icons.Default.HelpOutline,
+                    Icons.AutoMirrored.Filled.HelpOutline,
                     contentDescription = "Ajuda",
                     tint = MaterialTheme.colorScheme.onBackground
                 )
@@ -77,22 +74,44 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        FitTrackTextField(
+        OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
-            placeholder = "E-mail ou nome de usuário"
+            onValueChange = { 
+                email = it
+                emailError = null
+            },
+            label = { Text("E-mail ou nome de usuário") },
+            placeholder = { Text("usuario@exemplo.com") },
+            isError = emailError != null,
+            supportingText = emailError?.let { error -> 
+                { Text(error, color = MaterialTheme.colorScheme.error) }
+            },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        FitTrackTextField(
+        OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
-            placeholder = "Senha",
-            visualTransformation = PasswordVisualTransformation()
+            onValueChange = { 
+                password = it
+                passwordError = null
+            },
+            label = { Text("Senha") },
+            placeholder = { Text("••••••••") },
+            visualTransformation = PasswordVisualTransformation(),
+            isError = passwordError != null,
+            supportingText = passwordError?.let { error -> 
+                { Text(error, color = MaterialTheme.colorScheme.error) }
+            },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = "Esqueci minha senha",
@@ -100,7 +119,7 @@ fun LoginScreen(
             fontSize = 14.sp,
             textDecoration = TextDecoration.Underline,
             modifier = Modifier
-                .align(Alignment.Start)
+                .align(Alignment.End)
                 .clickable { /* TODO */ }
                 .padding(vertical = 8.dp)
         )
@@ -109,7 +128,21 @@ fun LoginScreen(
 
         FitTrackButton(
             text = "Entrar",
-            onClick = onLoginSuccess,
+            onClick = {
+                // Validação simples
+                var hasError = false
+                if (email.isBlank()) {
+                    emailError = "Preencha o e-mail"
+                    hasError = true
+                }
+                if (password.isBlank()) {
+                    passwordError = "Preencha a senha"
+                    hasError = true
+                }
+                if (!hasError) {
+                    onLoginSuccess()
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         )
 

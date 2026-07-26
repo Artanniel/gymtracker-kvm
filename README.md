@@ -3,8 +3,10 @@
   <p><b>Seu parceiro definitivo para treinos e dieta, construído com o poder do Kotlin Multiplatform.</b></p>
   
   [![Kotlin](https://img.shields.io/badge/Kotlin-2.1.20-7F52FF.svg?style=flat-square&logo=kotlin)](https://kotlinlang.org)
-  [![Compose Multiplatform](https://img.shields.io/badge/Compose-1.7.1-4285F4.svg?style=flat-square&logo=android)](https://www.jetbrains.com/lp/compose-multiplatform/)
+  [![Compose Multiplatform](https://img.shields.io/badge/Compose-1.7.3-4285F4.svg?style=flat-square&logo=android)](https://www.jetbrains.com/lp/compose-multiplatform/)
   [![SQLDelight](https://img.shields.io/badge/SQLDelight-2.1.0-FF4081.svg?style=flat-square&logo=sqlite)](https://cashapp.github.io/sqldelight/)
+  [![Quarkus](https://img.shields.io/badge/Quarkus-3.15.1-4695EB.svg?style=flat-square&logo=quarkus)](https://quarkus.io/)
+  [![Railway](https://img.shields.io/badge/Railway-Deploy-1B1D26.svg?style=flat-square&logo=railway)](https://railway.app)
 </div>
 
 ---
@@ -28,65 +30,227 @@ Você pode baixar a versão mais recente do aplicativo diretamente através dos 
 
 ---
 
-## 🏗️ Estrutura do Projeto
+## 🏗️ Arquitetura Geral
 
-O projeto segue a arquitetura KMP padrão, separando claramente o código comum dos entrypoints de cada plataforma.
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        MOBILE / DESKTOP / WEB                   │
+│                    (Kotlin Multiplatform + Compose)              │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌──────────────┐  ┌────────────────────────┐  │
+│  │  Local DB   │  │  Sync Queue  │  │  ConnectivityMonitor   │  │
+│  │ (SQLDelight)│  │ (pending_sync│  │  (expect/actual)       │  │
+│  └──────┬──────┘  └──────┬───────┘  └───────────┬────────────┘  │
+│         │                │                      │               │
+│         └────────────────┼──────────────────────┘               │
+│                          │                                      │
+│                 ┌────────▼────────┐                             │
+│                 │  HybridRepo     │                             │
+│                 │ (local-first)   │                             │
+│                 └────────┬────────┘                             │
+│                          │                                      │
+│                 ┌────────▼────────┐                             │
+│                 │  KtorApiClient  │──── HTTP ──────────┐        │
+│                 └─────────────────┘                    │        │
+└────────────────────────────────────────────────────────┼────────┘
+                                                         │
+                              ┌───────────────────────────┘
+                              │
+┌─────────────────────────────▼───────────────────────────────────┐
+│                     BACKEND (Quarkus 3.15.1)                    │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌────────────────┐  ┌────────────────┐  ┌──────────────────┐   │
+│  │  Controllers   │  │   Services     │  │   Liquibase      │   │
+│  │  (REST API)    │  │  (Business)    │  │  (Migrations)    │   │
+│  └───────┬────────┘  └───────┬────────┘  └──────────────────┘   │
+│          │                   │                                  │
+│  ┌───────▼───────────────────▼────────┐                         │
+│  │       Hibernate ORM + Panache      │                         │
+│  └────────────────┬───────────────────┘                         │
+│                   │                                             │
+└───────────────────┼─────────────────────────────────────────────┘
+                    │
+         ┌──────────▼──────────┐
+         │     PostgreSQL 15   │◄──── Schema: gymtracker
+         │  (compartilhado     │
+         │   com InvoiceBuilder)│
+         └─────────────────────┘
+                    │
+         ┌──────────▼──────────┐
+         │   Keycloak 24.0.4   │◄──── Realm: gymtracker
+         │  (OIDC + JWT Auth)  │
+         └─────────────────────┘
+```
+
+### Estrutura do Projeto
 
 ```text
 GymTrackerKMP/
-├── shared/                        # 🧠 KMP Core: 100% da Lógica de Negócios e UI (Compose)
+├── shared/                        # 🧠 KMP Core: Lógica de Negócios e UI
 │   └── src/
-│       ├── commonMain/            # Código compartilhado entre todos os targets (UI, Repo, DB)
-│       ├── androidMain/           # actual: AndroidSqliteDriver
-│       ├── iosMain/               # actual: NativeSqliteDriver
-│       ├── jvmMain/               # actual: JdbcSqliteDriver
-│       └── wasmJsMain/            # actual: WebWorkerDriver
+│       ├── commonMain/            # Código compartilhado (UI, Repos, DB, Sync)
+│       ├── androidMain/           # actual: AndroidSqliteDriver, ConnectivityMonitor
+│       ├── iosMain/               # actual: NativeSqliteDriver, ConnectivityMonitor
+│       ├── jvmMain/               # actual: JdbcSqliteDriver, ConnectivityMonitor
+│       └── wasmJsMain/            # actual: WebWorkerDriver, ConnectivityMonitor
 │
-├── androidApp/                    # 📱 Entrypoint Android (MainActivity)
-├── desktopApp/                    # 💻 Entrypoint Desktop (JVM + jpackage)
-├── webApp/                        # 🌐 Entrypoint Web (WasmJs + webpack)
-└── iosApp/                        # 🍎 Projeto Xcode (consome o shared framework)
+├── backend/                       # ☕ Backend Quarkus (Java 21)
+│   ├── src/main/java/
+│   │   ├── controller/            # REST Controllers
+│   │   ├── domain/                # JPA Entities
+│   │   ├── service/               # Business Logic
+│   │   └── dto/                   # Data Transfer Objects
+│   ├── src/main/resources/
+│   │   ├── application.properties # Config (dev/test/prod)
+│   │   └── db/                    # Liquibase Migrations
+│   ├── keycloak/                  # Keycloak Realm Config
+│   ├── Dockerfile                 # Multi-stage build
+│   └── docker-compose.yml         # Local development
+│
+├── androidApp/                    # 📱 Entrypoint Android
+├── desktopApp/                    # 💻 Entrypoint Desktop
+├── webApp/                        # 🌐 Entrypoint Web
+└── iosApp/                        # 🍎 Projeto Xcode
 ```
+
+---
+
+## 🔄 Offline-First Sync
+
+O GymTracker funciona **100% offline**. Todos os dados são salvos localmente primeiro, depois sincronizados com o backend quando disponível.
+
+### Fluxo de Sincronização
+
+```
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│   App KMP    │────►│  Local DB    │────►│  Sync Queue  │
+│  (Operação)  │     │  (SQLDelight)│     │ (pending_sync│
+└──────────────┘     └──────────────┘     └──────┬───────┘
+                                                  │
+                                        ┌─────────▼─────────┐
+                                        │ ConnectivityMonitor │
+                                        │   (Online?)        │
+                                        └─────────┬─────────┘
+                                                  │ SIM
+                                        ┌─────────▼─────────┐
+                                        │   KtorApiClient    │
+                                        │  (HTTP → Backend)  │
+                                        └─────────┬─────────┘
+                                                  │
+                                        ┌─────────▼─────────┐
+                                        │   Backend API      │
+                                        │  (Quarkus + PG)    │
+                                        └───────────────────┘
+```
+
+### Configurações de Sync
+
+| Configuração | Valor |
+|---|---|
+| Retry automático | 3 tentativas |
+| Resolução de conflitos | Remote wins (servidor tem prioridade) |
+| Sync automático | Ao reconectar |
+| UI | Badge no header + tela de status |
+| Limpeza | Operações > 7 dias são removidas |
+
+---
+
+## 🛠️ Stack Tecnológica
+
+### Frontend (KMP)
+
+| Camada | Tecnologia |
+|---|---|
+| **UI** | Compose Multiplatform 1.7.3 |
+| **Linguagem** | Kotlin 2.1.20 |
+| **Banco de Dados** | SQLDelight 2.1.0 |
+| **HTTP Client** | Ktor 3.1.1 (multiplatform) |
+| **ViewModel** | `androidx.lifecycle` 2.9.0 |
+| **Gestão de Estado** | StateFlow + `collectAsState()` |
+| **Serialização** | Kotlinx Serialization 1.8.1 |
+| **Gráficos** | Koalaplot |
+| **Assincronismo** | Kotlinx Coroutines 1.10.x |
+
+### Backend (Quarkus)
+
+| Camada | Tecnologia |
+|---|---|
+| **Framework** | Quarkus 3.15.1 |
+| **Linguagem** | Java 21 |
+| **ORM** | Hibernate ORM + Panache |
+| **Banco de Dados** | PostgreSQL 15 |
+| **Migrations** | Liquibase |
+| **Autenticação** | Keycloak (OIDC + JWT) |
+| **Health Check** | SmallRye Health |
+| **Métricas** | Micrometer + Prometheus |
+
+### Infraestrutura
+
+| Componente | Tecnologia |
+|---|---|
+| **Containerização** | Docker (multi-stage build) |
+| **Orquestração** | Docker Compose |
+| **Deploy** | Railway |
+| **Auth Server** | Keycloak 24.0.4 |
+| **Banco de Dados** | PostgreSQL 15 (compartilhado com InvoiceBuilder) |
 
 ---
 
 ## 🚀 Como Buildar e Executar
 
 ### Pré-requisitos
+
 | Plataforma | Ferramentas Necessárias |
 |---|---|
-| **Android** | Android Studio Narwhal 2025.1+ / JDK 17 |
-| **iOS** | macOS + Xcode 16+ + Plugin Kotlin Multiplatform |
+| **Frontend** | JDK 17+, Kotlin 2.1.20 |
+| **Backend** | JDK 21+, Maven 3.9+, Docker |
+| **Android** | Android Studio Narwhal 2025.1+ |
+| **iOS** | macOS + Xcode 16+ |
 | **Desktop** | JDK 17+ |
-| **Web** | Node.js 18+ + Navegador com suporte a WasmGC (Chrome 119+, Firefox 120+, Safari 18.2+) |
+| **Web** | Node.js 18+ + Chrome 119+/Firefox 120+ |
 
 ### Comandos Principais
+
+<details>
+<summary><b>🖥️ Backend (Quarkus)</b></summary>
+
+```bash
+cd backend
+
+# Modo desenvolvimento (com Docker para PG + Keycloak)
+docker-compose up -d
+mvn quarkus:dev
+
+# Acessar:
+# - API: http://localhost:8082
+# - Health: http://localhost:8082/q/health
+# - Swagger: http://localhost:8082/q/dev-ui
+```
+</details>
 
 <details>
 <summary><b>🤖 Android</b></summary>
 
 ```bash
-# Compilar e gerar o APK de debug
+# Compilar APK
 ./gradlew :androidApp:assembleDebug
 
-# Instalar no dispositivo conectado
+# Instalar
 adb install androidApp/build/outputs/apk/debug/androidApp-debug.apk
 ```
-*Ou simplesmente clique em "Run" no Android Studio.*
 </details>
 
 <details>
 <summary><b>💻 Desktop (JVM)</b></summary>
 
 ```bash
-# Executar a aplicação Desktop diretamente
-./gradlew :desktopApp:run                       
+./gradlew :desktopApp:run
 
-# Empacotamento Nativo
-./gradlew :desktopApp:createDistributable       # Gera executável stand-alone
-./gradlew :desktopApp:packageDeb                # Linux (.deb)
-./gradlew :desktopApp:packageMsi                # Windows (.msi)
-./gradlew :desktopApp:packageDmg                # macOS (.dmg)
+# Empacotamento
+./gradlew :desktopApp:createDistributable
+./gradlew :desktopApp:packageDeb    # Linux
+./gradlew :desktopApp:packageMsi    # Windows
+./gradlew :desktopApp:packageDmg    # macOS
 ```
 </details>
 
@@ -94,65 +258,86 @@ adb install androidApp/build/outputs/apk/debug/androidApp-debug.apk
 <summary><b>🌐 Web (Wasm)</b></summary>
 
 ```bash
-# Servidor de desenvolvimento com Hot Reload
-./gradlew :webApp:wasmJsBrowserDevelopmentRun   
+# Dev server com Hot Reload
+./gradlew :webApp:wasmJsBrowserDevelopmentRun
 
-# Build Otimizado de Produção (Saída em webApp/build/dist/)
-./gradlew :webApp:wasmJsBrowserDistribution     
+# Build de produção
+./gradlew :webApp:wasmJsBrowserDistribution
 ```
 </details>
 
 <details>
 <summary><b>🍎 iOS</b></summary>
 
-1. Execute a compilação do framework:
-   ```bash
-   ./gradlew :shared:assembleXCFramework
-   ```
-2. Abra o projeto no Xcode (`iosApp/iosApp.xcodeproj`).
-3. Selecione seu Simulador ou Dispositivo e clique em **Run**.
+```bash
+./gradlew :shared:assembleXCFramework
+# Abrir iosApp/iosApp.xcodeproj no Xcode
+```
 </details>
 
 ---
 
-## 🛠️ Stack Tecnológica
+## 📋 API Endpoints
 
-O GymTracker foi modernizado para extrair o máximo do ecossistema Kotlin:
-
-| Camada | Tecnologia |
-|---|---|
-| **UI** | Compose Multiplatform 1.7.1 |
-| **Linguagem** | Kotlin 2.1.20 |
-| **Banco de Dados** | SQLDelight 2.1.0 (Bancos Nativos por Plataforma) |
-| **ViewModel** | `androidx.lifecycle` 2.9.0 (Suporte KMP) |
-| **Gestão de Estado**| StateFlow + `collectAsState()` |
-| **Gráficos** | Koalaplot |
-| **Assincronismo** | Kotlinx Coroutines 1.10.x |
-
----
-
-## 🔄 Histórico de Migração (Android ➡️ KMP)
-
-Este projeto evoluiu de um app exclusivamente Android para um projeto multiplataforma completo. Principais substituições:
-
-- `Room + DAOs` ➡️ **SQLDelight (`.sq` files)**
-- `LiveData` ➡️ **StateFlow**
-- `RecyclerView + Adapters` ➡️ **LazyColumn**
-- `ViewBinding + XML` ➡️ **@Composable Functions**
-- `MPAndroidChart` ➡️ **Koalaplot**
-- `Activity/Fragment` ➡️ **Screen @Composable (Navegação baseada em estado)**
+| Método | Endpoint | Descrição | Auth |
+|---|---|---|---|
+| `GET` | `/api/workout-sessions` | Listar sessões | JWT |
+| `POST` | `/api/workout-sessions` | Criar sessão | JWT |
+| `GET` | `/api/workout-sessions/{id}` | Buscar sessão | JWT |
+| `PUT` | `/api/workout-sessions/{id}` | Atualizar sessão | JWT |
+| `DELETE` | `/api/workout-sessions/{id}` | Remover sessão | JWT |
+| `GET` | `/api/workout-sessions/{id}/sets` | Listar sets | JWT |
+| `POST` | `/api/workout-sessions/{id}/sets` | Criar set | JWT |
+| `POST` | `/api/sync` | Sync batch | JWT |
+| `GET` | `/api/sync/pull` | Pull dados | JWT |
+| `GET` | `/api/sync/health` | Health check | Não |
 
 ---
 
-## 📋 Roadmap e Próximos Passos
+## 📋 Roadmap
 
-- [ ] Integrar projeto Xcode `iosApp` via framework KMP.
-- [ ] Finalizar integração de gráficos de progresso com Koalaplot.
-- [ ] Configurar persistência Web via OPFS (Origin Private File System).
-- [ ] Configuração de pipelines de CI/CD (Fastlane / GitHub Actions).
-- [ ] Implementar AdMob (Android) e SKAdNetwork (iOS) para monetização.
+### ✅ Concluído
+- [x] KMP (Android, iOS, Desktop, Web)
+- [x] SQLDelight (banco nativo por plataforma)
+- [x] Splash Screen com animação
+- [x] Onboarding (5 páginas + perfil)
+- [x] Sistema de streaks e badges
+- [x] Notificações in-app
+- [x] Gerador de treinos com IA
+- [x] Gráficos de progresso (Koalaplot)
+- [x] Google Ads estratégicos
+- [x] Backend Quarkus (REST API)
+- [x] Keycloak (OIDC + JWT)
+- [x] Liquibase (migrations)
+- [x] Offline-first sync (Ktor + SyncManager)
+- [x] ConnectivityMonitor (multiplatform)
+- [x] SyncStatusScreen (UI de status)
+- [x] Docker Compose (local dev)
+- [x] Railway config
+
+### 🔄 Em Progresso
+- [ ] Deploy no Railway
+- [ ] Integração completa KMP ↔ Backend
+
+### 📌 Próximos
+- [ ] CI/CD (GitHub Actions)
+- [ ] Testes E2E
+- [ ] Push notifications
+- [ ] Monetização (AdMob + SKAdNetwork)
 
 ---
+
+## 📚 Links Úteis
+
+- [Documentação KMP](https://kotlinlang.org/docs/multiplatform.html)
+- [Quarkus Guide](https://quarkus.io/guides/)
+- [Keycloak Getting Started](https://www.keycloak.org/getting-started)
+- [Railway Deploy](https://docs.railway.app/)
+- [SQLDelight](https://cashapp.github.io/sqldelight/)
+- [Ktor Client](https://ktor.io/docs/client.html)
+
+---
+
 <p align="center">
   <i>Construído com ❤️ e Kotlin</i>
 </p>

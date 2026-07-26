@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="002-create-set-logs" author="gymtracker">
+        <createTable tableName="set_logs">
+            <column name="id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="session_id" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="exercise_id" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="exercise_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="set_number" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="set_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reps_target" type="VARCHAR(50)"/>
+            <column name="weight_kg" type="DOUBLE"/>
+            <column name="reps_actual" type="BIGINT"/>
+            <column name="completed" type="BIGINT" defaultValueNumeric="0"/>
+            <column name="rest_seconds" type="BIGINT"/>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="set_logs" indexName="idx_set_logs_user_session">
+            <column name="user_id"/>
+            <column name="session_id"/>
+        </createIndex>
+        <createIndex tableName="set_logs" indexName="idx_set_logs_exercise">
+            <column name="exercise_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

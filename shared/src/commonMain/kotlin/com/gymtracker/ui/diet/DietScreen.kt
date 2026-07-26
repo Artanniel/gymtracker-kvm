@@ -60,7 +60,7 @@ fun DietScreen() {
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        "🎉 Dia completo! Todas as refeições e suplementos registrados.",
+                        "Dia completo! Todas as refeicoes e suplementos registrados.",
                         modifier = Modifier.fillMaxWidth().padding(12.dp),
                         color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -171,9 +171,9 @@ fun FoodItemRow(item: FoodItem) {
     Column(modifier = Modifier.padding(vertical = 6.dp)) {
         Text(item.category, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.bodySmall)
-        val fmtQty: (Int?) -> String = { qty -> if (qty != null) "${qty}g/ml — " else "" }
-        Text("🥇 ${fmtQty(item.preference.qty)}${item.preference.name}", style = MaterialTheme.typography.bodySmall)
-        item.sub1?.let { Text("🥈 ${fmtQty(it.qty)}${it.name}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-        item.sub2?.let { Text("🥉 ${fmtQty(it.qty)}${it.name}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        val fmtQty: (Int?) -> String = { qty -> if (qty != null) "${qty}g/ml - " else "" }
+        Text("1. ${fmtQty(item.preference.qty)}${item.preference.name}", style = MaterialTheme.typography.bodySmall)
+        item.sub1?.let { Text("2. ${fmtQty(it.qty)}${it.name}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        item.sub2?.let { Text("3. ${fmtQty(it.qty)}${it.name}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
     }
 }

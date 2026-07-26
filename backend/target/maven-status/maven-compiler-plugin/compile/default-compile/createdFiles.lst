@@ -1,0 +1,11 @@
+com/gymtracker/controller/SetLogController.class
+com/gymtracker/controller/SyncController.class
+com/gymtracker/dto/SyncRequest.class
+com/gymtracker/service/SyncService.class
+com/gymtracker/service/WorkoutService.class
+com/gymtracker/domain/WorkoutConfig.class
+com/gymtracker/controller/WorkoutSessionController.class
+com/gymtracker/controller/SyncController$HealthStatus.class
+com/gymtracker/domain/WorkoutSession.class
+com/gymtracker/dto/SyncResponse.class
+com/gymtracker/domain/SetLog.class

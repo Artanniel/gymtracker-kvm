@@ -9,6 +9,8 @@ import com.gymtracker.db.ChecklistLogQueries
 import com.gymtracker.db.GoalLogQueries
 import com.gymtracker.db.GymDatabase
 import com.gymtracker.db.SetLogQueries
+import com.gymtracker.db.SyncTableQueries
+import com.gymtracker.db.WorkoutConfigQueries
 import com.gymtracker.db.WorkoutSessionQueries
 import kotlin.Long
 import kotlin.Unit
@@ -29,6 +31,10 @@ private class GymDatabaseImpl(
   override val goalLogQueries: GoalLogQueries = GoalLogQueries(driver)
 
   override val setLogQueries: SetLogQueries = SetLogQueries(driver)
+
+  override val syncTableQueries: SyncTableQueries = SyncTableQueries(driver)
+
+  override val workoutConfigQueries: WorkoutConfigQueries = WorkoutConfigQueries(driver)
 
   override val workoutSessionQueries: WorkoutSessionQueries = WorkoutSessionQueries(driver)
 
@@ -80,6 +86,44 @@ private class GymDatabaseImpl(
           |)
           """.trimMargin(), 0).await()
       driver.execute(null, """
+          |CREATE TABLE pending_sync (
+          |    id            TEXT NOT NULL PRIMARY KEY,
+          |    entity_type   TEXT NOT NULL,        -- 'workout_session', 'set_log', 'goal_log', 'user_profile'
+          |    entity_id     TEXT NOT NULL,        -- ID da entidade local
+          |    action        TEXT NOT NULL,        -- 'CREATE', 'UPDATE', 'DELETE'
+          |    payload       TEXT NOT NULL,        -- JSON serializado da entidade
+          |    created_at    INTEGER NOT NULL,     -- epoch millis
+          |    retry_count   INTEGER NOT NULL DEFAULT 0,
+          |    last_error    TEXT,
+          |    synced        INTEGER NOT NULL DEFAULT 0
+          |)
+          """.trimMargin(), 0).await()
+      driver.execute(null, """
+          |CREATE TABLE workout_configs (
+          |    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+          |    workoutId   TEXT NOT NULL UNIQUE,
+          |    isArchived  INTEGER NOT NULL DEFAULT 0,
+          |    startDate   INTEGER,
+          |    endDate     INTEGER,
+          |    isActive    INTEGER NOT NULL DEFAULT 0,
+          |    coverImage  TEXT,
+          |    youtubeUrl  TEXT
+          |)
+          """.trimMargin(), 0).await()
+      driver.execute(null, """
+          |CREATE TABLE workout_exercises (
+          |    id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+          |    workoutId       TEXT NOT NULL,
+          |    exerciseId      TEXT NOT NULL,
+          |    exerciseName    TEXT NOT NULL,
+          |    setNumber       INTEGER NOT NULL,
+          |    setType         TEXT NOT NULL,
+          |    repsTarget      TEXT NOT NULL,
+          |    suggestedWeight REAL,
+          |    FOREIGN KEY (workoutId) REFERENCES workout_configs(workoutId) ON DELETE CASCADE
+          |)
+          """.trimMargin(), 0).await()
+      driver.execute(null, """
           |CREATE TABLE workout_sessions (
           |    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
           |    workoutId   TEXT NOT NULL,
@@ -89,6 +133,12 @@ private class GymDatabaseImpl(
           |)
           """.trimMargin(), 0).await()
       driver.execute(null, "CREATE INDEX idx_set_logs_session ON set_logs(sessionId)", 0).await()
+      driver.execute(null,
+          "CREATE INDEX idx_pending_sync_entity ON pending_sync(entity_type, entity_id)", 0).await()
+      driver.execute(null, "CREATE INDEX idx_pending_sync_synced ON pending_sync(synced)",
+          0).await()
+      driver.execute(null, "CREATE INDEX idx_pending_sync_created ON pending_sync(created_at)",
+          0).await()
     }
 
     override fun migrate(

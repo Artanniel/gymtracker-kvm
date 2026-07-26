@@ -38,6 +38,9 @@ compose.desktop {
             packageName = "GymTracker"
             packageVersion = "1.0.0"
             description = "Acompanhamento de treino e dieta"
+            linux {
+                iconFile.set(project.file("src/main/resources/icon.png"))
+            }
         }
     }
 }

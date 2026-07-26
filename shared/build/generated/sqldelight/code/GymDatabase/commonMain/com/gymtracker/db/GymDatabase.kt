@@ -15,6 +15,10 @@ public interface GymDatabase : SuspendingTransacter {
 
   public val setLogQueries: SetLogQueries
 
+  public val syncTableQueries: SyncTableQueries
+
+  public val workoutConfigQueries: WorkoutConfigQueries
+
   public val workoutSessionQueries: WorkoutSessionQueries
 
   public companion object {

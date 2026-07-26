@@ -2,6 +2,17 @@ package com.gymtracker.data.model
 
 object WorkoutData {
 
+    private val _customWorkouts = mutableListOf<Workout>()
+    val customWorkouts: List<Workout> get() = _customWorkouts
+
+    fun addCustomWorkout(workout: Workout) {
+        _customWorkouts.add(workout)
+    }
+
+    fun removeCustomWorkout(workoutId: String) {
+        _customWorkouts.removeAll { it.id == workoutId }
+    }
+
     val workouts: List<Workout> = listOf(
 
         Workout(
@@ -272,7 +283,7 @@ object WorkoutData {
         )
     )
 
-    val allWorkouts: List<Workout> get() = workouts + extraWorkouts
+    val allWorkouts: List<Workout> get() = workouts + extraWorkouts + _customWorkouts
 
     fun getWorkoutById(id: String): Workout? = allWorkouts.find { it.id == id }
 }

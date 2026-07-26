@@ -1,0 +1,111 @@
+{
+  "results": {
+    "Feature 5 - Broken Icons": {
+      "status": "FAIL",
+      "details": [
+        "Goal icons (Passos Di\u00e1rios, Nata\u00e7\u00e3o, \u00c1gua) render as \u22a0 crossed boxes",
+        "Bottom nav icons partially broken - Hist\u00f3rico and Progresso icons degraded",
+        "Icons are missing font/glyph rendering in WasmGC canvas"
+      ]
+    },
+    "Feature 1 - Multiple Current Workouts": {
+      "status": "PARTIAL",
+      "details": [
+        "Clicked Treino A checkbox",
+        "Clicked Treino B checkbox",
+        "Clicked Treino C checkbox",
+        "Unchecked Treino C",
+        "Requires visual verification from screenshots"
+      ]
+    },
+    "Feature 2 - Create New Workouts": {
+      "status": "PARTIAL",
+      "details": [
+        "Filled create dialog: name='Treino Teste QA', short='TQ'",
+        "Clicked Criar button",
+        "Requires visual verification from screenshots"
+      ]
+    },
+    "Feature 3 - Edit Workouts": {
+      "status": "PARTIAL",
+      "details": [
+        "Clicked Editar on Treino A",
+        "Clicked Adicionar Exerc\u00edcio",
+        "Added exercise 'Supino Reto'",
+        "Saved exercises",
+        "Requires visual verification from screenshots"
+      ]
+    },
+    "Feature 4 - Cover Image + YouTube": {
+      "status": "PARTIAL",
+      "details": [
+        "Typed cover image path",
+        "Typed YouTube URL",
+        "Cover and video set",
+        "Navigated to home to verify cover/video",
+        "Requires visual verification from screenshots"
+      ]
+    },
+    "Feature 6 - Auto-adjustable Button Text": {
+      "status": "PASS",
+      "details": [
+        "desktop (1280x800): captured",
+        "mobile (375x812): captured",
+        "small (320x568): captured",
+        "Source: FitTrackButton uses maxLines=1, TextOverflow.Ellipsis",
+        "Source: FitTrackButton uses widthIn(min=48.dp) for min touch target"
+      ]
+    }
+  },
+  "console_errors": [],
+  "overall_score": 5.0,
+  "screenshots": [
+    "01_initial_load.png",
+    "01_login.png",
+    "01_login_screen.png",
+    "02_after_login.png",
+    "02_home.png",
+    "02_settings_screen.png",
+    "03_settings.png",
+    "03_settings_screen.png",
+    "04_checkboxes_clicked.png",
+    "04a_check_A.png",
+    "04b_check_B.png",
+    "04b_home_after_checkbox.png",
+    "04c_check_C.png",
+    "04d_home_multiple.png",
+    "04e_home_unmark_C.png",
+    "05_home_icons.png",
+    "05_icon_check_initial.png",
+    "05a_home_icons.png",
+    "05b_home_goals_icons.png",
+    "05c_history_icons.png",
+    "05d_diet_icons.png",
+    "05e_progress_icons.png",
+    "06_create_dialog.png",
+    "06a_create_dialog.png",
+    "06b_create_filled.png",
+    "06c_after_create.png",
+    "07a_edit_dialog.png",
+    "07b_add_exercise.png",
+    "07c_exercise_name.png",
+    "07d_exercise_added.png",
+    "07e_after_save.png",
+    "08a_cover_input.png",
+    "08b_youtube_input.png",
+    "08c_cover_video_set.png",
+    "08d_home_with_cover.png",
+    "09_desktop.png",
+    "09_mobile.png",
+    "09_small.png",
+    "10_final.png",
+    "11_cover_youtube_set.png",
+    "12_home_with_cover.png",
+    "13_button_desktop.png",
+    "13_button_mobile.png",
+    "13_button_small_mobile.png",
+    "13_button_text_check.png",
+    "14_final_state.png",
+    "15_mobile_view.png"
+  ]
+}

@@ -44,6 +44,11 @@ kotlin {
                 implementation(libs.sqldelight.coroutines)
 
                 implementation(libs.koalaplot.core)
+                
+                // Ktor (HTTP Client)
+                implementation(libs.ktor.core)
+                implementation(libs.ktor.content.negotiation)
+                implementation(libs.ktor.serialization.json)
             }
         }
 
@@ -52,6 +57,7 @@ kotlin {
                 implementation(libs.coroutines.android)
                 implementation(libs.sqldelight.android.driver)
                 implementation(compose.preview)
+                implementation(libs.ktor.client.okhttp)
             }
         }
 
@@ -59,6 +65,7 @@ kotlin {
             dependsOn(commonMain)
             dependencies {
                 implementation(libs.sqldelight.native.driver)
+                implementation(libs.ktor.client.darwin)
             }
         }
 
@@ -70,12 +77,14 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation(libs.sqldelight.sqlite.driver)
                 implementation(libs.coroutines.core)
+                implementation(libs.ktor.client.cio)
             }
         }
 
         val wasmJsMain by getting {
             dependencies {
                 implementation(libs.sqldelight.web.worker)
+                implementation(libs.ktor.client.cio)
             }
         }
 

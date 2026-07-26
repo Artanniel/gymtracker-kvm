@@ -1,0 +1,84 @@
+-- Tabela de operações pendentes de sincronização
+-- Usada para fila offline-first: app salva local, depois sincroniza quando online
+
+CREATE TABLE pending_sync (
+    id            TEXT NOT NULL PRIMARY KEY,
+    entity_type   TEXT NOT NULL,        -- 'workout_session', 'set_log', 'goal_log', 'user_profile'
+    entity_id     TEXT NOT NULL,        -- ID da entidade local
+    action        TEXT NOT NULL,        -- 'CREATE', 'UPDATE', 'DELETE'
+    payload       TEXT NOT NULL,        -- JSON serializado da entidade
+    created_at    INTEGER NOT NULL,     -- epoch millis
+    retry_count   INTEGER NOT NULL DEFAULT 0,
+    last_error    TEXT,
+    synced        INTEGER NOT NULL DEFAULT 0
+);
+
+-- Índices para performance
+CREATE INDEX idx_pending_sync_entity ON pending_sync(entity_type, entity_id);
+CREATE INDEX idx_pending_sync_synced ON pending_sync(synced);
+CREATE INDEX idx_pending_sync_created ON pending_sync(created_at);
+
+-- ═══════════════════════════════════════════════════════════════════
+-- QUERIES
+-- ═══════════════════════════════════════════════════════════════════
+
+-- Busca todas as operações pendentes (não sincronizadas)
+getAllPending:
+SELECT * FROM pending_sync 
+WHERE synced = 0 
+ORDER BY created_at ASC;
+
+-- Busca por ID
+getById:
+SELECT * FROM pending_sync 
+WHERE id = ?;
+
+-- Busca por tipo de entidade
+getByEntityType:
+SELECT * FROM pending_sync 
+WHERE entity_type = ? AND synced = 0 
+ORDER BY created_at ASC;
+
+-- Insere nova operação pendente
+insert:
+INSERT INTO pending_sync (id, entity_type, entity_id, action, payload, created_at, retry_count, last_error, synced)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+-- Marca como sincronizada
+markSynced:
+UPDATE pending_sync 
+SET synced = 1 
+WHERE id = ?;
+
+-- Incrementa contador de retry e registra erro
+incrementRetry:
+UPDATE pending_sync 
+SET retry_count = retry_count + 1, 
+    last_error = ? 
+WHERE id = ?;
+
+-- Remove operações já sincronizadas (limpeza)
+deleteSynced:
+DELETE FROM pending_sync 
+WHERE synced = 1;
+
+-- Remove por ID
+deleteById:
+DELETE FROM pending_sync 
+WHERE id = ?;
+
+-- Conta operações pendentes
+getPendingCount:
+SELECT COUNT(*) 
+FROM pending_sync 
+WHERE synced = 0;
+
+-- Busca operações com falha (retry_count >= 3)
+getFailedSyncs:
+SELECT * FROM pending_sync 
+WHERE retry_count >= 3 AND synced = 0;
+
+-- Remove operações muito antigas (mais de 7 dias)
+deleteOldPending:
+DELETE FROM pending_sync 
+WHERE synced = 0 AND created_at < ?;

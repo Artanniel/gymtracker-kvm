@@ -12,6 +12,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 
 data class SetRowUiState(
     val exerciseId: String,
@@ -133,7 +134,7 @@ class WorkoutSessionViewModel(private val workoutId: String) : ViewModel() {
         timerJob?.cancel()
         _timerSeconds.value = seconds
         _timerRunning.value = true
-        restStartMs = System.currentTimeMillis()
+        restStartMs = Clock.System.now().toEpochMilliseconds()
         restForSet = if (exerciseId != null && setNumber != null) exerciseId to setNumber else null
         timerJob = viewModelScope.launch {
             var rem = seconds
@@ -152,7 +153,7 @@ class WorkoutSessionViewModel(private val workoutId: String) : ViewModel() {
 
     private suspend fun saveRest() {
         val (eid, sn) = restForSet ?: return
-        val elapsed = ((System.currentTimeMillis() - restStartMs) / 1000L).toInt().coerceAtLeast(0)
+        val elapsed = ((Clock.System.now().toEpochMilliseconds() - restStartMs) / 1000L).toInt().coerceAtLeast(0)
         val key = eid to sn
         val log = currentLogs[key] ?: return
         currentLogs[key] = log.copy(restSeconds = elapsed.toLong())

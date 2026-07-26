@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <include file="db/changelogs/001-create-workout-sessions.xml"/>
+    <include file="db/changelogs/002-create-set-logs.xml"/>
+    <include file="db/changelogs/003-create-workout-configs.xml"/>
+
+</databaseChangeLog>

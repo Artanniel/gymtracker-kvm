@@ -14,9 +14,20 @@ class HistoryViewModel : ViewModel() {
     private val _sessions = MutableStateFlow<List<Workout_sessions>>(emptyList())
     val sessions: StateFlow<List<Workout_sessions>> = _sessions
 
+    private val _sessionExercises = MutableStateFlow<Map<Long, List<Pair<String, String>>>>(emptyMap())
+    val sessionExercises: StateFlow<Map<Long, List<Pair<String, String>>>> = _sessionExercises
+
     fun load() {
         viewModelScope.launch {
-            repo.getAllSessionsFlow().collect { _sessions.value = it }
+            repo.getAllSessionsFlow().collect { sessionList ->
+                _sessions.value = sessionList
+                val exerciseMap = mutableMapOf<Long, List<Pair<String, String>>>()
+                sessionList.forEach { session ->
+                    val exercises = repo.getExercisesBySession(session.id)
+                    exerciseMap[session.id] = exercises
+                }
+                _sessionExercises.value = exerciseMap
+            }
         }
     }
 }

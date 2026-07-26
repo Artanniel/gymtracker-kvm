@@ -1,9 +1,21 @@
 package com.gymtracker.util
 
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.math.abs
+
+fun formatEpochMillis(epochMs: Long): String {
+    val instant = Instant.fromEpochMilliseconds(epochMs)
+    val tz = TimeZone.currentSystemDefault()
+    val local = instant.toLocalDateTime(tz)
+    val dd = local.dayOfMonth.toString().padStart(2, '0')
+    val mm = local.monthNumber.toString().padStart(2, '0')
+    val hh = local.hour.toString().padStart(2, '0')
+    val min = local.minute.toString().padStart(2, '0')
+    return "$dd/$mm/${local.year} · $hh:$min"
+}
 
 fun formatTimer(seconds: Int): String {
     val m = seconds / 60

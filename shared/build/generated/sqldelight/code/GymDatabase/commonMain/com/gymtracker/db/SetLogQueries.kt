@@ -106,6 +106,55 @@ public class SetLogQueries(
     )
   }
 
+  public fun <T : Any> getByExerciseWithDate(exerciseId: String, mapper: (
+    id: Long,
+    sessionId: Long,
+    exerciseId: String,
+    exerciseName: String,
+    setNumber: Long,
+    setType: String,
+    repsTarget: String,
+    weightKg: Double?,
+    repsActual: Long?,
+    completed: Long,
+    restSeconds: Long?,
+    sessionDate: Long,
+  ) -> T): Query<T> = GetByExerciseWithDateQuery(exerciseId) { cursor ->
+    mapper(
+      cursor.getLong(0)!!,
+      cursor.getLong(1)!!,
+      cursor.getString(2)!!,
+      cursor.getString(3)!!,
+      cursor.getLong(4)!!,
+      cursor.getString(5)!!,
+      cursor.getString(6)!!,
+      cursor.getDouble(7),
+      cursor.getLong(8),
+      cursor.getLong(9)!!,
+      cursor.getLong(10),
+      cursor.getLong(11)!!
+    )
+  }
+
+  public fun getByExerciseWithDate(exerciseId: String): Query<GetByExerciseWithDate> =
+      getByExerciseWithDate(exerciseId) { id, sessionId, exerciseId_, exerciseName, setNumber,
+      setType, repsTarget, weightKg, repsActual, completed, restSeconds, sessionDate ->
+    GetByExerciseWithDate(
+      id,
+      sessionId,
+      exerciseId_,
+      exerciseName,
+      setNumber,
+      setType,
+      repsTarget,
+      weightKg,
+      repsActual,
+      completed,
+      restSeconds,
+      sessionDate
+    )
+  }
+
   public fun <T : Any> getProgressForSet(
     exerciseId: String,
     setNumber: Long,
@@ -153,6 +202,22 @@ public class SetLogQueries(
       repsActual,
       completed,
       restSeconds
+    )
+  }
+
+  public fun <T : Any> getExercisesBySession(sessionId: Long, mapper: (exerciseId: String,
+      exerciseName: String) -> T): Query<T> = GetExercisesBySessionQuery(sessionId) { cursor ->
+    mapper(
+      cursor.getString(0)!!,
+      cursor.getString(1)!!
+    )
+  }
+
+  public fun getExercisesBySession(sessionId: Long): Query<GetExercisesBySession> =
+      getExercisesBySession(sessionId) { exerciseId, exerciseName ->
+    GetExercisesBySession(
+      exerciseId,
+      exerciseName
     )
   }
 
@@ -265,12 +330,37 @@ public class SetLogQueries(
         driver.executeQuery(1_640_182_205, """
     |SELECT sl.id, sl.sessionId, sl.exerciseId, sl.exerciseName, sl.setNumber, sl.setType, sl.repsTarget, sl.weightKg, sl.repsActual, sl.completed, sl.restSeconds FROM set_logs sl
     |INNER JOIN workout_sessions ws ON sl.sessionId = ws.id
-    |WHERE sl.exerciseId = ? ORDER BY ws.date ASC
+    |WHERE sl.exerciseId = ? ORDER BY ws.date DESC
     """.trimMargin(), mapper, 1) {
       bindString(0, exerciseId)
     }
 
     override fun toString(): String = "SetLog.sq:getByExercise"
+  }
+
+  private inner class GetByExerciseWithDateQuery<out T : Any>(
+    public val exerciseId: String,
+    mapper: (SqlCursor) -> T,
+  ) : Query<T>(mapper) {
+    override fun addListener(listener: Query.Listener) {
+      driver.addListener("set_logs", "workout_sessions", listener = listener)
+    }
+
+    override fun removeListener(listener: Query.Listener) {
+      driver.removeListener("set_logs", "workout_sessions", listener = listener)
+    }
+
+    override fun <R> execute(mapper: (SqlCursor) -> QueryResult<R>): QueryResult<R> =
+        driver.executeQuery(1_246_284_401, """
+    |SELECT sl.id, sl.sessionId, sl.exerciseId, sl.exerciseName, sl.setNumber, sl.setType, sl.repsTarget, sl.weightKg, sl.repsActual, sl.completed, sl.restSeconds, ws.date AS sessionDate FROM set_logs sl
+    |INNER JOIN workout_sessions ws ON sl.sessionId = ws.id
+    |WHERE sl.exerciseId = ? AND sl.completed = 1
+    |ORDER BY ws.date ASC
+    """.trimMargin(), mapper, 1) {
+      bindString(0, exerciseId)
+    }
+
+    override fun toString(): String = "SetLog.sq:getByExerciseWithDate"
   }
 
   private inner class GetProgressForSetQuery<out T : Any>(
@@ -297,5 +387,27 @@ public class SetLogQueries(
     }
 
     override fun toString(): String = "SetLog.sq:getProgressForSet"
+  }
+
+  private inner class GetExercisesBySessionQuery<out T : Any>(
+    public val sessionId: Long,
+    mapper: (SqlCursor) -> T,
+  ) : Query<T>(mapper) {
+    override fun addListener(listener: Query.Listener) {
+      driver.addListener("set_logs", listener = listener)
+    }
+
+    override fun removeListener(listener: Query.Listener) {
+      driver.removeListener("set_logs", listener = listener)
+    }
+
+    override fun <R> execute(mapper: (SqlCursor) -> QueryResult<R>): QueryResult<R> =
+        driver.executeQuery(1_098_386_258,
+        """SELECT DISTINCT exerciseId, exerciseName FROM set_logs WHERE sessionId = ? ORDER BY exerciseId""",
+        mapper, 1) {
+      bindLong(0, sessionId)
+    }
+
+    override fun toString(): String = "SetLog.sq:getExercisesBySession"
   }
 }

@@ -1,0 +1,10 @@
+/home/artanniel/git/kotlin/gymtracker-kvm/backend/src/main/java/com/gymtracker/dto/SyncResponse.java
+/home/artanniel/git/kotlin/gymtracker-kvm/backend/src/main/java/com/gymtracker/service/SyncService.java
+/home/artanniel/git/kotlin/gymtracker-kvm/backend/src/main/java/com/gymtracker/controller/SetLogController.java
+/home/artanniel/git/kotlin/gymtracker-kvm/backend/src/main/java/com/gymtracker/service/WorkoutService.java
+/home/artanniel/git/kotlin/gymtracker-kvm/backend/src/main/java/com/gymtracker/domain/SetLog.java
+/home/artanniel/git/kotlin/gymtracker-kvm/backend/src/main/java/com/gymtracker/dto/SyncRequest.java
+/home/artanniel/git/kotlin/gymtracker-kvm/backend/src/main/java/com/gymtracker/controller/WorkoutSessionController.java
+/home/artanniel/git/kotlin/gymtracker-kvm/backend/src/main/java/com/gymtracker/domain/WorkoutSession.java
+/home/artanniel/git/kotlin/gymtracker-kvm/backend/src/main/java/com/gymtracker/controller/SyncController.java
+/home/artanniel/git/kotlin/gymtracker-kvm/backend/src/main/java/com/gymtracker/domain/WorkoutConfig.java

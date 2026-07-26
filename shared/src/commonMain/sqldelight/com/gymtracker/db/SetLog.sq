@@ -21,7 +21,13 @@ SELECT * FROM set_logs WHERE sessionId = ? ORDER BY exerciseId, setNumber;
 getByExercise:
 SELECT sl.* FROM set_logs sl
 INNER JOIN workout_sessions ws ON sl.sessionId = ws.id
-WHERE sl.exerciseId = ? ORDER BY ws.date ASC;
+WHERE sl.exerciseId = ? ORDER BY ws.date DESC;
+
+getByExerciseWithDate:
+SELECT sl.*, ws.date AS sessionDate FROM set_logs sl
+INNER JOIN workout_sessions ws ON sl.sessionId = ws.id
+WHERE sl.exerciseId = ? AND sl.completed = 1
+ORDER BY ws.date ASC;
 
 getProgressForSet:
 SELECT sl.* FROM set_logs sl
@@ -35,6 +41,9 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 update:
 UPDATE set_logs SET weightKg = ?, repsActual = ?, completed = ?, restSeconds = ?
 WHERE sessionId = ? AND exerciseId = ? AND setNumber = ?;
+
+getExercisesBySession:
+SELECT DISTINCT exerciseId, exerciseName FROM set_logs WHERE sessionId = ? ORDER BY exerciseId;
 
 lastInsertId:
 SELECT last_insert_rowid();
