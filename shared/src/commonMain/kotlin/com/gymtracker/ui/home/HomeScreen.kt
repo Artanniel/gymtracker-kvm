@@ -47,9 +47,7 @@ import com.gymtracker.ui.settings.SettingsViewModel
 import com.gymtracker.util.AvailabilityStatus
 import com.gymtracker.util.checkAvailability
 import com.gymtracker.util.formatDaysAgo
-import androidx.compose.ui.graphics.toComposeImageBitmap
-import org.jetbrains.skia.Image
-import kotlinx.browser.window
+import com.gymtracker.util.decodeBase64ToImageBitmap
 
 @Composable
 fun HomeScreen(
@@ -434,18 +432,7 @@ fun WorkoutCard(
                 Box(modifier = Modifier.fillMaxWidth().height(220.dp)) {
                     // Try to decode base64 image
                     val imageBitmap = remember(coverImage) {
-                        try {
-                            val cleanBase64 = if (coverImage.contains(",")) {
-                                coverImage.substringAfter(",")
-                            } else {
-                                coverImage
-                            }
-                            val decoded = window.atob(cleanBase64)
-                            val bytes = ByteArray(decoded.length) { decoded[it].code.toByte() }
-                            Image.makeFromEncoded(bytes).toComposeImageBitmap()
-                        } catch (e: Exception) {
-                            null
-                        }
+                        decodeBase64ToImageBitmap(coverImage)
                     }
 
                     if (imageBitmap != null) {

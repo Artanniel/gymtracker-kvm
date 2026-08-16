@@ -22,8 +22,7 @@ import com.gymtracker.ui.theme.FitTrackBackground
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlinx.browser.window
-import androidx.compose.ui.graphics.toComposeImageBitmap
+import com.gymtracker.util.decodeBase64ToImageBitmap
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -276,18 +275,7 @@ fun WorkoutConfigCard(
                 ) {
                     // Try to decode and show the cover image
                     val bitmap = remember(config.coverImage) {
-                        try {
-                            val cleanBase64 = if (config.coverImage!!.contains(",")) {
-                                config.coverImage!!.substringAfter(",")
-                            } else {
-                                config.coverImage!!
-                            }
-                            val decoded = window.atob(cleanBase64)
-                            val bytes = ByteArray(decoded.length) { decoded[it].code.toByte() }
-                            org.jetbrains.skia.Image.makeFromEncoded(bytes).toComposeImageBitmap()
-                        } catch (e: Exception) {
-                            null
-                        }
+                        decodeBase64ToImageBitmap(config.coverImage!!)
                     }
 
                     if (bitmap != null) {
