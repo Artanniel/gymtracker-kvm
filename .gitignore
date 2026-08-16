@@ -18,3 +18,18 @@ local.properties
 # OS
 .DS_Store
 Thumbs.db
+
+# Backend (Maven/Quarkus)
+backend/target/
+*.class
+*.jar
+*.war
+
+# NPM/Node
+kotlin-js-store/
+node_modules/
+package-lock.json
+
+# Env files (contêm senhas)
+backend/RAILWAY_VARIABLES.env
+*.env.local
