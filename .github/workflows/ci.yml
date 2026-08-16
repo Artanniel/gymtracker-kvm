@@ -84,7 +84,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Compile Android
-        run: ./gradlew :shared:compileKotlinAndroid
+        run: ./gradlew :shared:compileDebugKotlinAndroid
 
       - name: Compile JVM
         run: ./gradlew :shared:compileKotlinJvm
@@ -105,19 +105,17 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      # OWASP Dependency Check (Gradle)
+      # OWASP Dependency Check (Maven backend)
       - name: Run OWASP Dependency Check
-        run: ./gradlew dependencyCheckAnalyze -Ddependency-check.format=HTML,JSON
+        working-directory: backend
+        run: mvn dependency-check-check -Ddependency-check.format=HTML,JSON
 
       - name: Upload OWASP Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: owasp-report
-          path: "**/build/reports/dependency-check-report.*"
+          path: backend/target/dependency-check-report.*
 
       # Semgrep SAST
       - name: Run Semgrep SAST
@@ -132,7 +130,7 @@ jobs:
           SEMGREP_SEND_METRICS: off
 
       - name: Upload Semgrep SARIF
-        if: always()
+        if: always() && hashFiles('semgrep.sarif') != ''
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: semgrep.sarif
@@ -149,7 +147,7 @@ jobs:
         run: docker build -t gymtracker-backend:scan .
 
       - name: Run Trivy Container Scan
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           image-ref: 'gymtracker-backend:scan'
           format: 'sarif'
@@ -158,7 +156,7 @@ jobs:
           exit-code: '1'
 
       - name: Run Trivy Dockerfile Misconfig Scan
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.35.0
         with:
           scan-type: 'config'
           scan-ref: 'backend/'
