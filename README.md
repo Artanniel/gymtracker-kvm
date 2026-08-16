@@ -26,7 +26,7 @@ O **GymTracker** é um aplicativo 100% nativo construído uma única vez e distr
 
 Você pode baixar a versão mais recente do aplicativo diretamente através dos links abaixo:
 
-* **🤖 Android APK (Debug):** [Baixar GymTracker-v1.0-debug.apk](releases/GymTracker-v1.0-debug.apk) *(19MB)*
+* **🤖 Android APK (Debug):** [Baixar GymTracker-v1.0-debug.apk]([releases/GymTracker-v1.0-debug.apk](https://github.com/Artanniel/gymtracker-kvm/releases/download/v1.0.0-MVP/GymTracker-v1.0-debug.apk)) *(19MB)*
 
 ---
 
