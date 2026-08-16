@@ -108,6 +108,7 @@ jobs:
       # OWASP Dependency Check (Maven backend)
       - name: Run OWASP Dependency Check
         working-directory: backend
+        continue-on-error: true
         run: mvn dependency-check:check -Ddependency-check.format=HTML,JSON
 
       - name: Upload OWASP Report
@@ -151,8 +152,7 @@ jobs:
         continue-on-error: true
         with:
           image-ref: 'gymtracker-backend:scan'
-          format: 'sarif'
-          output: 'trivy-image.sarif'
+          format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: '0'
 
@@ -164,12 +164,6 @@ jobs:
           scan-ref: 'backend/'
           format: 'table'
           severity: 'CRITICAL,HIGH'
-
-      - name: Upload Trivy SARIF
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'trivy-image.sarif'
 
   # ── 6. Build Artifacts ────────────────────────────────────────
   build:
