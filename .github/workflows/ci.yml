@@ -1,0 +1,239 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, improve/*]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 3 * * 0' # Weekly full scan on Sundays at 03:00 UTC
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
+env:
+  JAVA_VERSION: '21'
+
+jobs:
+  # ── 1. Lint & Static Analysis ──────────────────────────────────
+  lint:
+    name: Detekt Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run Detekt
+        run: ./gradlew detekt
+
+      - name: Upload Detekt report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-report
+          path: "**/build/reports/detekt/**"
+
+  # ── 2. Backend Tests ───────────────────────────────────────────
+  test-backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Run Maven Tests
+        working-directory: backend
+        run: mvn test
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-results
+          path: backend/target/surefire-reports/
+
+  # ── 3. KMP Compile Check ──────────────────────────────────────
+  compile-kmp:
+    name: KMP Compile Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Compile Android
+        run: ./gradlew :shared:compileKotlinAndroid
+
+      - name: Compile JVM
+        run: ./gradlew :shared:compileKotlinJvm
+
+      - name: Compile WasmJs
+        run: ./gradlew :shared:compileKotlinWasmJs
+
+  # ── 4. Security Scanning ──────────────────────────────────────
+  security:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # OWASP Dependency Check (Gradle)
+      - name: Run OWASP Dependency Check
+        run: ./gradlew dependencyCheckAnalyze -Ddependency-check.format=HTML,JSON
+
+      - name: Upload OWASP Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: owasp-report
+          path: "**/build/reports/dependency-check-report.*"
+
+      # Semgrep SAST
+      - name: Run Semgrep SAST
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/java
+            p/kotlin
+            p/owasp-top-ten
+          generateSarif: true
+        env:
+          SEMGREP_SEND_METRICS: off
+
+      - name: Upload Semgrep SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+
+  # ── 5. Container Security (Trivy) ─────────────────────────────
+  container-security:
+    name: Container Security (Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Backend Image
+        working-directory: backend
+        run: docker build -t gymtracker-backend:scan .
+
+      - name: Run Trivy Container Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'gymtracker-backend:scan'
+          format: 'sarif'
+          output: 'trivy-image.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+
+      - name: Run Trivy Dockerfile Misconfig Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'config'
+          scan-ref: 'backend/'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-image.sarif'
+
+  # ── 6. Build Artifacts ────────────────────────────────────────
+  build:
+    name: Build Artifacts
+    runs-on: ubuntu-latest
+    needs: [lint, test-backend, compile-kmp, security, container-security]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build Android APK
+        run: ./gradlew :apps:student:androidApp:assembleDebug
+
+      - name: Build Backend JAR
+        working-directory: backend
+        run: mvn package -DskipTests
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: apps/student/androidApp/build/outputs/apk/debug/androidApp-debug.apk
+
+      - name: Upload Backend JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jar
+          path: backend/target/*.jar
+
+  # ── 7. Deploy Signal ──────────────────────────────────────────
+  deploy-signal:
+    name: Deploy Ready Signal
+    runs-on: ubuntu-latest
+    needs: [lint, test-backend, compile-kmp, security, container-security]
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Check All Jobs
+        run: |
+          echo "All security and quality checks passed!"
+          echo "✅ Detekt: ${{ needs.lint.result }}"
+          echo "✅ Backend Tests: ${{ needs.test-backend.result }}"
+          echo "✅ KMP Compile: ${{ needs.compile-kmp.result }}"
+          echo "✅ Security Scan: ${{ needs.security.result }}"
+          echo "✅ Container Security: ${{ needs.container-security.result }}"
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## ✅ Deploy Ready\n\nAll quality and security checks passed:\n\n| Check | Status |\n|-------|--------|\n| Detekt (Lint) | ✅ Passed |\n| Backend Tests | ✅ Passed |\n| KMP Compile | ✅ Passed |\n| OWASP Dependency Check | ✅ Passed |\n| Semgrep SAST | ✅ Passed |\n| Trivy Container Scan | ✅ Passed |\n\n🚀 **Deploy can be performed.**'
+            })
