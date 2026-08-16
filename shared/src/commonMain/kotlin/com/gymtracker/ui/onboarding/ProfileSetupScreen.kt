@@ -315,7 +315,7 @@ fun PreferencesPage(profile: UserProfile, onUpdate: (UserProfile) -> Unit) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                (1..7).forEach { days ->
+                for (days in 1..7) {
                     FilterChip(
                         selected = profile.workoutDaysPerWeek == days,
                         onClick = { onUpdate(profile.copy(workoutDaysPerWeek = days)) },
