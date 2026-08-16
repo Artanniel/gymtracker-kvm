@@ -108,7 +108,7 @@ jobs:
       # OWASP Dependency Check (Maven backend)
       - name: Run OWASP Dependency Check
         working-directory: backend
-        run: mvn dependency-check-check -Ddependency-check.format=HTML,JSON
+        run: mvn dependency-check:check -Ddependency-check.format=HTML,JSON
 
       - name: Upload OWASP Report
         if: always()
