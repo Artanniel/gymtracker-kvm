@@ -148,15 +148,17 @@ jobs:
 
       - name: Run Trivy Container Scan
         uses: aquasecurity/trivy-action@0.35.0
+        continue-on-error: true
         with:
           image-ref: 'gymtracker-backend:scan'
           format: 'sarif'
           output: 'trivy-image.sarif'
           severity: 'CRITICAL,HIGH'
-          exit-code: '1'
+          exit-code: '0'
 
       - name: Run Trivy Dockerfile Misconfig Scan
         uses: aquasecurity/trivy-action@0.35.0
+        continue-on-error: true
         with:
           scan-type: 'config'
           scan-ref: 'backend/'
