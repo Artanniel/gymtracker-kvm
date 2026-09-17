@@ -5,28 +5,24 @@ import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Disabled;
-
 import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestProfile(CustomTestProfile.class)
-@Disabled("OIDC DevServices conflicts with port 8081 - enable when running without external services")
 public class WorkoutSessionControllerTest {
 
     @Test
     public void testListSessionsWithoutAuth() {
-        // With OIDC disabled in test, endpoints are accessible but JWT is null
-        // This results in 500 because jwt.getSubject() fails
+        // With OIDC disabled in test, JWT is null → 401 Unauthorized
         RestAssured.given()
             .when().get("/api/workout-sessions")
             .then()
-            .statusCode(200);
+            .statusCode(401);
     }
 
     @Test
     public void testSyncHealthWithoutAuth() {
-        // Health endpoint should work without auth
+        // Health endpoint does not require JWT
         RestAssured.given()
             .when().get("/api/sync/health")
             .then()
@@ -36,6 +32,7 @@ public class WorkoutSessionControllerTest {
 
     @Test
     public void testCreateSession() {
+        // With OIDC disabled in test, JWT is null → 401 Unauthorized
         String sessionJson = """
             {
                 "workoutId": "upper-body-push",
@@ -50,6 +47,6 @@ public class WorkoutSessionControllerTest {
             .body(sessionJson)
             .when().post("/api/workout-sessions")
             .then()
-            .statusCode(anyOf(is(201), is(500))); // 500 because JWT is null in test
+            .statusCode(401);
     }
 }

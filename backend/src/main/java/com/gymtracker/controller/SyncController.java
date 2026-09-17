@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.resteasy.reactive.RestResponse;
 
@@ -24,6 +25,9 @@ public class SyncController {
     JsonWebToken jwt;
 
     private String getUserId() {
+        if (jwt == null || jwt.getSubject() == null) {
+            throw new WebApplicationException("Authentication required", Response.Status.UNAUTHORIZED);
+        }
         return jwt.getSubject();
     }
 

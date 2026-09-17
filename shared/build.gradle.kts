@@ -7,6 +7,22 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.androidLibrary)
+    id("io.gitlab.arturbosch.detekt") version "1.23.7"
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom("$rootDir/config/detekt/detekt.yml")
+    source.setFrom(
+        files(
+            "src/commonMain/kotlin",
+            "src/androidMain/kotlin",
+            "src/iosMain/kotlin",
+            "src/jvmMain/kotlin",
+            "src/wasmJsMain/kotlin"
+        )
+    )
 }
 
 kotlin {

@@ -27,6 +27,8 @@ import androidx.compose.ui.window.DialogProperties
 import com.gymtracker.ui.theme.FitTrackPrimary
 import com.gymtracker.ui.theme.FitTrackSurface
 import com.gymtracker.util.decodeBase64ToImageBitmap
+import kotlinx.browser.document
+import kotlinx.browser.window
 import org.w3c.dom.HTMLInputElement
 import org.w3c.files.FileReader
 import org.jetbrains.skia.Image
@@ -42,7 +44,7 @@ actual fun ImageCropUpload(
     currentCover: String?,
     onCoverSelected: (String) -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier
 ) {
     var selectedImageBase64 by remember { mutableStateOf<String?>(null) }
     var zoom by remember { mutableFloatStateOf(1f) }

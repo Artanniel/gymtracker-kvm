@@ -5,18 +5,15 @@ import io.quarkus.test.junit.TestProfile;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Disabled;
-
 import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestProfile(CustomTestProfile.class)
-@Disabled("OIDC DevServices conflicts with port 8081 - enable when running without external services")
 public class SyncControllerTest {
 
     @Test
     public void testSyncEndpoint() {
-        // With OIDC disabled in test, endpoint is accessible
+        // With OIDC disabled in test, JWT is null → 401 Unauthorized
         String syncJson = """
             [
                 {
@@ -33,20 +30,22 @@ public class SyncControllerTest {
             .body(syncJson)
             .when().post("/api/sync")
             .then()
-            .statusCode(anyOf(is(200), is(500))); // 500 because JWT is null in test
+            .statusCode(401);
     }
 
     @Test
     public void testPullEndpoint() {
+        // With OIDC disabled in test, JWT is null → 401 Unauthorized
         RestAssured.given()
             .queryParam("entityType", "workout_sessions")
             .when().get("/api/sync/pull")
             .then()
-            .statusCode(anyOf(is(200), is(500))); // 500 because JWT is null in test
+            .statusCode(401);
     }
 
     @Test
     public void testHealthEndpoint() {
+        // Health endpoint does not require JWT
         RestAssured.given()
             .when().get("/api/sync/health")
             .then()

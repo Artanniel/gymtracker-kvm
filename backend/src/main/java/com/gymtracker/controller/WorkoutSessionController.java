@@ -24,6 +24,9 @@ public class WorkoutSessionController {
     JsonWebToken jwt;
 
     private String getUserId() {
+        if (jwt == null || jwt.getSubject() == null) {
+            throw new WebApplicationException("Authentication required", Response.Status.UNAUTHORIZED);
+        }
         return jwt.getSubject();
     }
 

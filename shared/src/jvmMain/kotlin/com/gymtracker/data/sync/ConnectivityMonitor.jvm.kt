@@ -55,7 +55,7 @@ actual class ConnectivityMonitor {
                 val connection = url.openConnection()
                 connection.connectTimeout = 3000
                 connection.connect()
-                connection.disconnect()
+                connection.inputStream.close()
                 true
             } catch (e: Exception) {
                 false
