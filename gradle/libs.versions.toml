@@ -12,7 +12,7 @@ koalaplot               = "0.7.1"
 room                    = "2.7.1"          # ainda usado apenas no androidMain se necessário
 junit                   = "4.13.2"
 androidxTestExt         = "1.2.1"
-ktor                    = "3.1.1"
+ktor                    = "3.5.2"
 
 [libraries]
 # Lifecycle / ViewModel KMP
