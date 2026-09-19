@@ -43,7 +43,10 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
     needs: build-backend
-    if: github.ref == 'refs/heads/main'
+    # Sanity check on every PR: the Dockerfile must still build, even though we
+    # only push+deploy on main. Runs on PRs (no push) and is superseded by
+    # deploy-hetzner's build+push step when this ref is main.
+    if: github.ref != 'refs/heads/main'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,24 +54,53 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image
+      - name: Build Docker image (no push)
         working-directory: backend
         run: docker build -t gymtracker-backend:latest .
 
-  deploy-railway:
+  deploy-hetzner:
     runs-on: ubuntu-latest
     needs: build-backend
+    # Only after a PR is approved and merged into main — deploying
+    # approved-but-unmerged code would be unusual and risky.
     if: github.ref == 'refs/heads/main'
     environment: production
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Deploy to Railway
-        working-directory: backend
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up --service gymtracker-backend
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          push: true
+          tags: ghcr.io/artanniel/gymtracker-backend:latest
+          cache-from: type=gha,scope=gymtracker-backend
+          cache-to: type=gha,scope=gymtracker-backend,mode=max
+
+      # A chave SSH usada aqui só executa um comando fixo (forced command no
+      # authorized_keys do servidor) — restart do deployment gymtracker-backend,
+      # nada além disso. Ver Hetzner/hetzner-k3s-deployment para o resto do cluster.
+      - name: Deploy to Hetzner K3s
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HETZNER_SSH_HOST }}
+          username: ${{ secrets.HETZNER_SSH_USER }}
+          key: ${{ secrets.HETZNER_SSH_DEPLOY_KEY }}
+          port: 22
+          timeout: 30s
+          command_timeout: 5m
+          script: "true"
