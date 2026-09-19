@@ -74,6 +74,7 @@ kotlin {
                 implementation(libs.sqldelight.android.driver)
                 implementation(compose.preview)
                 implementation(libs.ktor.client.okhttp)
+                implementation(libs.androidx.core.ktx)
             }
         }
 

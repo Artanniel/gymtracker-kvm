@@ -18,13 +18,13 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gymtracker.ui.components.FitTrackButton
-import com.gymtracker.ui.components.FitTrackTextField
 import com.gymtracker.ui.theme.FitTrackBackground
 import com.gymtracker.ui.theme.FitTrackSurface
 import com.gymtracker.ui.theme.FitTrackTextSecondary
 
 @Composable
 fun LoginScreen(
+    authViewModel: AuthViewModel,
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
@@ -33,6 +33,14 @@ fun LoginScreen(
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
 
+    val uiState by authViewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState) {
+        if (uiState.error == null && !uiState.isLoading) {
+            // Check if login succeeded (no error, not loading after attempt)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -40,20 +48,19 @@ fun LoginScreen(
             .padding(horizontal = 16.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.width(48.dp)) // Balance
+            Spacer(modifier = Modifier.width(48.dp))
             Text(
                 text = "FitTrack",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            IconButton(onClick = { /* TODO: Help */ }) {
+            IconButton(onClick = { }) {
                 Icon(
                     Icons.AutoMirrored.Filled.HelpOutline,
                     contentDescription = "Ajuda",
@@ -76,14 +83,15 @@ fun LoginScreen(
 
         OutlinedTextField(
             value = email,
-            onValueChange = { 
+            onValueChange = {
                 email = it
                 emailError = null
+                authViewModel.clearError()
             },
             label = { Text("E-mail ou nome de usuário") },
             placeholder = { Text("usuario@exemplo.com") },
             isError = emailError != null,
-            supportingText = emailError?.let { error -> 
+            supportingText = emailError?.let { error ->
                 { Text(error, color = MaterialTheme.colorScheme.error) }
             },
             singleLine = true,
@@ -95,15 +103,16 @@ fun LoginScreen(
 
         OutlinedTextField(
             value = password,
-            onValueChange = { 
+            onValueChange = {
                 password = it
                 passwordError = null
+                authViewModel.clearError()
             },
             label = { Text("Senha") },
             placeholder = { Text("••••••••") },
             visualTransformation = PasswordVisualTransformation(),
             isError = passwordError != null,
-            supportingText = passwordError?.let { error -> 
+            supportingText = passwordError?.let { error ->
                 { Text(error, color = MaterialTheme.colorScheme.error) }
             },
             singleLine = true,
@@ -120,16 +129,24 @@ fun LoginScreen(
             textDecoration = TextDecoration.Underline,
             modifier = Modifier
                 .align(Alignment.End)
-                .clickable { /* TODO */ }
+                .clickable { }
                 .padding(vertical = 8.dp)
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        if (uiState.error != null) {
+            Text(
+                text = uiState.error!!,
+                color = MaterialTheme.colorScheme.error,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
+
         FitTrackButton(
-            text = "Entrar",
+            text = if (uiState.isLoading) "Entrando..." else "Entrar",
             onClick = {
-                // Validação simples
                 var hasError = false
                 if (email.isBlank()) {
                     emailError = "Preencha o e-mail"
@@ -140,9 +157,11 @@ fun LoginScreen(
                     hasError = true
                 }
                 if (!hasError) {
+                    authViewModel.login(email, password)
                     onLoginSuccess()
                 }
             },
+            enabled = !uiState.isLoading,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -153,7 +172,7 @@ fun LoginScreen(
             color = FitTrackTextSecondary,
             fontSize = 14.sp
         )
-        
+
         Text(
             text = "Criar nova conta",
             color = FitTrackTextSecondary,
@@ -166,7 +185,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Parceiro Oficial Banner
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -190,14 +208,13 @@ fun LoginScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
-                    onClick = { /* TODO */ },
+                    onClick = { },
                     colors = ButtonDefaults.buttonColors(containerColor = FitTrackSurface),
                     contentPadding = PaddingValues(0.dp)
                 ) {
                     Text("Ver ofertas", color = MaterialTheme.colorScheme.onBackground)
                 }
             }
-            // A placeholder for the image
             Box(
                 modifier = Modifier
                     .size(80.dp)

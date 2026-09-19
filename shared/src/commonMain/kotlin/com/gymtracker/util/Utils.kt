@@ -6,6 +6,15 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.math.abs
 
+fun formatCurrency(value: Double): String {
+    val rounded = (kotlin.math.round(value * 100) / 100.0)
+    val sign = if (rounded < 0) "-" else ""
+    val absValue = kotlin.math.abs(rounded)
+    val intPart = absValue.toLong().toString()
+    val decPart = ((absValue * 100).toInt() % 100).toString().padStart(2, '0')
+    return "${sign}R$ ${intPart},${decPart}"
+}
+
 fun formatEpochMillis(epochMs: Long): String {
     val instant = Instant.fromEpochMilliseconds(epochMs)
     val tz = TimeZone.currentSystemDefault()

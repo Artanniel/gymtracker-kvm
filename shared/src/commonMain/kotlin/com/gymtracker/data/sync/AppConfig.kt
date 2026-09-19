@@ -66,7 +66,7 @@ object AppConfig {
         _isConfigured.value = false
     }
     
-    const val DEFAULT_API_URL = "http://localhost:8082"
+    const val DEFAULT_API_URL = "https://gymtracker.78.47.220.36.sslip.io"
     
     enum class Environment {
         DEVELOPMENT,

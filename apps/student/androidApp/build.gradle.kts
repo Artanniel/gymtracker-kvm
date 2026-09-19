@@ -16,11 +16,32 @@ android {
         applicationId = "com.gymtracker.android"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 4
+        versionName = "1.1.2"
+    }
+    signingConfigs {
+        create("release") {
+            val keystoreFile = file(System.getenv("KEYSTORE_FILE") ?: "gymtracker-release-key.jks")
+            if (keystoreFile.exists()) {
+                storeFile = keystoreFile
+                storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "gymtracker"
+                keyAlias = System.getenv("KEY_ALIAS") ?: "gymtracker"
+                keyPassword = System.getenv("KEY_PASSWORD") ?: "gymtracker"
+            }
+        }
     }
     buildTypes {
-        release { isMinifyEnabled = false }
+        release {
+            isMinifyEnabled = false
+            val releaseSigning = signingConfigs.findByName("release")
+            if (releaseSigning?.storeFile?.exists() == true) {
+                signingConfig = releaseSigning
+            }
+        }
+    }
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

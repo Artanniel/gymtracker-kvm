@@ -1,0 +1,39 @@
+CREATE TABLE students (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name        TEXT NOT NULL,
+    email       TEXT,
+    phone       TEXT,
+    birthDate   INTEGER,
+    notes       TEXT NOT NULL DEFAULT '',
+    isActive    INTEGER NOT NULL DEFAULT 1,
+    createdAt   INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000),
+    updatedAt   INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)
+);
+
+CREATE INDEX idx_students_name ON students(name);
+
+getAll:
+SELECT * FROM students ORDER BY name ASC;
+
+getActive:
+SELECT * FROM students WHERE isActive = 1 ORDER BY name ASC;
+
+getById:
+SELECT * FROM students WHERE id = ?;
+
+searchByName:
+SELECT * FROM students WHERE name LIKE '%' || ? || '%' ORDER BY name ASC;
+
+insert:
+INSERT INTO students (name, email, phone, birthDate, notes, isActive, createdAt, updatedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE students SET name = ?, email = ?, phone = ?, birthDate = ?, notes = ?, isActive = ?, updatedAt = ?
+WHERE id = ?;
+
+delete:
+DELETE FROM students WHERE id = ?;
+
+lastInsertId:
+SELECT last_insert_rowid();

@@ -20,12 +20,18 @@ import com.gymtracker.ui.theme.FitTrackTextSecondary
 
 @Composable
 fun RegisterScreen(
+    authViewModel: AuthViewModel,
     onRegisterSuccess: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var nameError by remember { mutableStateOf<String?>(null) }
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+
+    val uiState by authViewModel.registerUiState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -34,7 +40,6 @@ fun RegisterScreen(
             .padding(horizontal = 16.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -49,7 +54,7 @@ fun RegisterScreen(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Spacer(modifier = Modifier.width(48.dp)) // Balance for back button
+            Spacer(modifier = Modifier.width(48.dp))
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -74,34 +79,101 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        FitTrackTextField(
+        OutlinedTextField(
             value = name,
-            onValueChange = { name = it },
-            placeholder = "Nome completo"
+            onValueChange = {
+                name = it
+                nameError = null
+                authViewModel.clearError()
+            },
+            label = { Text("Nome completo") },
+            placeholder = { Text("João Silva") },
+            isError = nameError != null,
+            supportingText = nameError?.let { error ->
+                { Text(error, color = MaterialTheme.colorScheme.error) }
+            },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        FitTrackTextField(
+        OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
-            placeholder = "E-mail"
+            onValueChange = {
+                email = it
+                emailError = null
+                authViewModel.clearError()
+            },
+            label = { Text("E-mail") },
+            placeholder = { Text("joao@exemplo.com") },
+            isError = emailError != null,
+            supportingText = emailError?.let { error ->
+                { Text(error, color = MaterialTheme.colorScheme.error) }
+            },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        FitTrackTextField(
+        OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
-            placeholder = "Senha",
-            visualTransformation = PasswordVisualTransformation()
+            onValueChange = {
+                password = it
+                passwordError = null
+                authViewModel.clearError()
+            },
+            label = { Text("Senha") },
+            placeholder = { Text("••••••••") },
+            visualTransformation = PasswordVisualTransformation(),
+            isError = passwordError != null,
+            supportingText = passwordError?.let { error ->
+                { Text(error, color = MaterialTheme.colorScheme.error) }
+            },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        if (uiState.error != null) {
+            Text(
+                text = uiState.error!!,
+                color = MaterialTheme.colorScheme.error,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
+
         FitTrackButton(
-            text = "Criar Conta",
-            onClick = onRegisterSuccess,
+            text = if (uiState.isLoading) "Criando conta..." else "Criar Conta",
+            onClick = {
+                var hasError = false
+                if (name.isBlank()) {
+                    nameError = "Preencha o nome"
+                    hasError = true
+                }
+                if (email.isBlank()) {
+                    emailError = "Preencha o e-mail"
+                    hasError = true
+                }
+                if (password.isBlank()) {
+                    passwordError = "Preencha a senha"
+                    hasError = true
+                } else if (password.length < 6) {
+                    passwordError = "A senha deve ter pelo menos 6 caracteres"
+                    hasError = true
+                }
+                if (!hasError) {
+                    authViewModel.register(name, email, password)
+                    onRegisterSuccess()
+                }
+            },
+            enabled = !uiState.isLoading,
             modifier = Modifier.fillMaxWidth()
         )
 
