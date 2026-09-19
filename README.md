@@ -7,7 +7,6 @@
   [![SQLDelight](https://img.shields.io/badge/SQLDelight-2.1.0-FF4081.svg?style=flat-square&logo=sqlite)](https://cashapp.github.io/sqldelight/)
   [![Ktor](https://img.shields.io/badge/Ktor-3.1.1-087CFA.svg?style=flat-square&logo=ktor)](https://ktor.io/)
   [![Quarkus](https://img.shields.io/badge/Quarkus-3.15.1-4695EB.svg?style=flat-square&logo=quarkus)](https://quarkus.io/)
-  [![Railway](https://img.shields.io/badge/Railway-Deploy-1B1D26.svg?style=flat-square&logo=railway)](https://railway.app)
   [![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF.svg?style=flat-square&logo=github-actions)](.github/workflows)
 </div>
 
@@ -30,7 +29,7 @@ Baixe a versão mais recente diretamente:
 
 | Versão | Plataforma | Link | Tamanho |
 |---|---|---|---|
-| **v1.1.0** | 🤖 Android APK | [Baixar GymTracker-v1.1.0.apk](https://github.com/Artanniel/gymtracker-kvm/releases/latest/download/GymTracker-v1.1.0.apk) | ~13 MB |
+| **v1.1.1** | 🤖 Android APK | [Baixar GymTracker-v1.1.1.apk](https://github.com/Artanniel/gymtracker-kvm/releases/latest/download/GymTracker-v1.1.1.apk) | ~13 MB |
 
 > 💡 A release mais recente sempre está disponível em [GitHub Releases](https://github.com/Artanniel/gymtracker-kvm/releases).
 
@@ -200,7 +199,6 @@ O GymTracker funciona **100% offline**. Todos os dados são salvos localmente pr
 |---|---|
 | **CI/CD** | GitHub Actions |
 | **Containerização** | Docker |
-| **Deploy** | Railway |
 | **Banco de Dados** | PostgreSQL 15 |
 
 ---
@@ -373,7 +371,7 @@ adb install apps/student/androidApp/build/outputs/apk/debug/androidApp-debug.apk
 
 ### 🔄 Em Progresso
 
-- [ ] Deploy no Railway
+- [ ] Deploy em produção
 - [ ] Testes E2E
 
 ### 📌 Próximos
@@ -388,12 +386,11 @@ adb install apps/student/androidApp/build/outputs/apk/debug/androidApp-debug.apk
 
 - [Documentação KMP](https://kotlinlang.org/docs/multiplatform.html)
 - [Quarkus Guide](https://quarkus.io/guides/)
-- [Railway Deploy](https://docs.railway.app/)
 - [SQLDelight](https://cashapp.github.io/sqldelight/)
 - [Ktor Client](https://ktor.io/docs/client.html)
 
 ---
 
 <p align="center">
-  <i>Construído com ❤️ e Kotlin</i>
+  <i>Construído com ☕️ e Kotlin</i>
 </p>
