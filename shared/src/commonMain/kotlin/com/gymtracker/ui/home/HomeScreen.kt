@@ -18,6 +18,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SelfImprovement
@@ -55,6 +58,9 @@ fun HomeScreen(
     onSettings: () -> Unit = {},
     onNotifications: () -> Unit = {},
     onSync: () -> Unit = {},
+    onStudents: () -> Unit = {},
+    onVideos: () -> Unit = {},
+    onFinance: () -> Unit = {},
     pendingSyncCount: Int = 0
 ) {
     val vm: HomeViewModel = viewModel { HomeViewModel() }
@@ -127,13 +133,34 @@ fun HomeScreen(
                                 }
                             }
                         ) {
-                            IconButton(onClick = onSync) {
-                                Icon(
-                                    Icons.Filled.CloudSync,
-                                    contentDescription = "Sincronização",
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
+                        IconButton(onClick = onSync) {
+                            Icon(
+                                Icons.Filled.CloudSync,
+                                contentDescription = "Sincronização",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        IconButton(onClick = onStudents) {
+                            Icon(
+                                Icons.Filled.People,
+                                contentDescription = "Alunos",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        IconButton(onClick = onVideos) {
+                            Icon(
+                                Icons.Filled.PlayCircle,
+                                contentDescription = "Vídeos",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        IconButton(onClick = onFinance) {
+                            Icon(
+                                Icons.Filled.AccountBalanceWallet,
+                                contentDescription = "Financeiro",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                         }
                         BadgedBox(
                             badge = {

@@ -1,0 +1,94 @@
+CREATE TABLE payment_plans (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name        TEXT NOT NULL,
+    description TEXT,
+    durationMonths INTEGER NOT NULL DEFAULT 1,
+    price       REAL NOT NULL,
+    currency    TEXT NOT NULL DEFAULT 'BRL',
+    recurrence  TEXT NOT NULL DEFAULT 'monthly',
+    isActive    INTEGER NOT NULL DEFAULT 1,
+    createdAt   INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)
+);
+
+getAllPlans:
+SELECT * FROM payment_plans ORDER BY price ASC;
+
+getActivePlans:
+SELECT * FROM payment_plans WHERE isActive = 1 ORDER BY price ASC;
+
+getPlanById:
+SELECT * FROM payment_plans WHERE id = ?;
+
+insertPlan:
+INSERT INTO payment_plans (name, description, durationMonths, price, currency, recurrence, isActive)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+updatePlan:
+UPDATE payment_plans SET name = ?, description = ?, durationMonths = ?, price = ?, currency = ?, recurrence = ?, isActive = ?
+WHERE id = ?;
+
+deletePlan:
+DELETE FROM payment_plans WHERE id = ?;
+
+lastInsertPlanId:
+SELECT last_insert_rowid();
+
+CREATE TABLE invoices (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    studentId   INTEGER NOT NULL,
+    planId      INTEGER,
+    amount      REAL NOT NULL,
+    currency    TEXT NOT NULL DEFAULT 'BRL',
+    dueDate     INTEGER NOT NULL,
+    paidAt      INTEGER,
+    status      TEXT NOT NULL DEFAULT 'pending',
+    description TEXT,
+    paymentMethod TEXT,
+    createdAt   INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000),
+    FOREIGN KEY (studentId) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (planId) REFERENCES payment_plans(id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_invoices_student ON invoices(studentId);
+CREATE INDEX idx_invoices_status ON invoices(status);
+
+getAllInvoices:
+SELECT i.* FROM invoices i ORDER BY i.dueDate DESC;
+
+getInvoiceById:
+SELECT * FROM invoices WHERE id = ?;
+
+getInvoicesByStudent:
+SELECT * FROM invoices WHERE studentId = ? ORDER BY dueDate DESC;
+
+getInvoicesByStatus:
+SELECT * FROM invoices WHERE status = ? ORDER BY dueDate DESC;
+
+getOverdueInvoices:
+SELECT * FROM invoices WHERE status = 'pending' AND dueDate < ? ORDER BY dueDate ASC;
+
+getUpcomingInvoices:
+SELECT * FROM invoices WHERE status = 'pending' AND dueDate >= ? AND dueDate <= ? ORDER BY dueDate ASC;
+
+insertInvoice:
+INSERT INTO invoices (studentId, planId, amount, currency, dueDate, status, description)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+markInvoicePaid:
+UPDATE invoices SET status = 'paid', paidAt = ?, paymentMethod = ? WHERE id = ?;
+
+markInvoicePending:
+UPDATE invoices SET status = 'pending', paidAt = NULL, paymentMethod = NULL WHERE id = ?;
+
+deleteInvoice:
+DELETE FROM invoices WHERE id = ?;
+
+lastInsertInvoiceId:
+SELECT last_insert_rowid();
+
+getFinancialSummary:
+SELECT
+    COALESCE(SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END), 0) AS totalPaid,
+    COALESCE(SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END), 0) AS totalPending,
+    COALESCE(SUM(CASE WHEN status = 'overdue' THEN amount ELSE 0 END), 0) AS totalOverdue
+FROM invoices;

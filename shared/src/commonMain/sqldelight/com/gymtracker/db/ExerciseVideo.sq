@@ -1,0 +1,49 @@
+CREATE TABLE exercise_videos (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    exerciseId  TEXT NOT NULL,
+    title       TEXT NOT NULL,
+    url         TEXT NOT NULL,
+    thumbnailUrl TEXT,
+    duration    INTEGER,
+    description TEXT,
+    muscleGroup TEXT NOT NULL,
+    category    TEXT NOT NULL,
+    isCustom    INTEGER NOT NULL DEFAULT 0,
+    createdAt   INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)
+);
+
+CREATE INDEX idx_exercise_videos_exercise ON exercise_videos(exerciseId);
+CREATE INDEX idx_exercise_videos_muscle ON exercise_videos(muscleGroup);
+CREATE INDEX idx_exercise_videos_category ON exercise_videos(category);
+
+getAll:
+SELECT * FROM exercise_videos ORDER BY muscleGroup, title;
+
+getByExercise:
+SELECT * FROM exercise_videos WHERE exerciseId = ? ORDER BY title;
+
+getByMuscleGroup:
+SELECT * FROM exercise_videos WHERE muscleGroup = ? ORDER BY title;
+
+getByCategory:
+SELECT * FROM exercise_videos WHERE category = ? ORDER BY title;
+
+search:
+SELECT * FROM exercise_videos WHERE title LIKE '%' || ? || '%' OR description LIKE '%' || ? || '%' ORDER BY title;
+
+getCustom:
+SELECT * FROM exercise_videos WHERE isCustom = 1 ORDER BY createdAt DESC;
+
+insert:
+INSERT INTO exercise_videos (exerciseId, title, url, thumbnailUrl, duration, description, muscleGroup, category, isCustom)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE exercise_videos SET title = ?, url = ?, thumbnailUrl = ?, duration = ?, description = ?, muscleGroup = ?, category = ?
+WHERE id = ?;
+
+delete:
+DELETE FROM exercise_videos WHERE id = ?;
+
+lastInsertId:
+SELECT last_insert_rowid();
