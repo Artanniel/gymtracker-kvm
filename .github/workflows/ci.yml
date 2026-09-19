@@ -38,7 +38,7 @@ jobs:
 
       - name: Upload Detekt report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: detekt-report
           path: "**/build/reports/detekt/**"
@@ -62,7 +62,7 @@ jobs:
 
       - name: Upload Test Results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: backend-test-results
           path: backend/target/surefire-reports/
@@ -113,7 +113,7 @@ jobs:
 
       - name: Upload OWASP Report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: owasp-report
           path: backend/target/dependency-check-report.*
@@ -194,13 +194,13 @@ jobs:
         run: mvn package -DskipTests
 
       - name: Upload Android APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-apk
           path: apps/student/androidApp/build/outputs/apk/debug/androidApp-debug.apk
 
       - name: Upload Backend JAR
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: backend-jar
           path: backend/target/*.jar
