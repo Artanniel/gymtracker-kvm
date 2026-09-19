@@ -11,13 +11,13 @@ kotlin {
 
 android {
     namespace = "com.gymtracker.android"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "com.gymtracker.android"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 4
-        versionName = "1.1.2"
+        targetSdk = 36
+        versionCode = 5
+        versionName = "1.1.3"
     }
     signingConfigs {
         create("release") {
@@ -53,4 +53,11 @@ dependencies {
     implementation(project(":shared"))
     implementation(libs.androidx.activity.compose)
     implementation(libs.sqldelight.android.driver)
+
+    // Force OkHttp 4.x to avoid okhttp-android 5.5.0 requiring compileSdk 37
+    configurations.all {
+        resolutionStrategy {
+            force("com.squareup.okhttp3:okhttp:4.12.0")
+        }
+    }
 }
