@@ -9,6 +9,7 @@ on:
 jobs:
   detekt:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,6 +38,7 @@ jobs:
 
   dependency-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,6 +48,15 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Cache OWASP dependency-check data
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: ${{ runner.os }}-owasp-data-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-owasp-data-
 
       - name: OWASP Dependency Check (Backend)
         working-directory: backend

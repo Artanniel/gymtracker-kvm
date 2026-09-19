@@ -106,12 +106,21 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Cache OWASP dependency-check data
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: ${{ runner.os }}-owasp-data-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-owasp-data-
 
       # OWASP Dependency Check (Maven backend)
       - name: Run OWASP Dependency Check
         working-directory: backend
         continue-on-error: true
-        run: mvn dependency-check:check -Ddependency-check.format=HTML,JSON
+        run: mvn -B dependency-check:check -Ddependency-check.format=HTML,JSON
 
       - name: Upload OWASP Report
         if: always()
