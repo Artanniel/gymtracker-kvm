@@ -47,6 +47,7 @@ jobs:
   test-backend:
     name: Backend Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -55,10 +56,11 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
+          cache: 'maven'
 
       - name: Run Maven Tests
         working-directory: backend
-        run: mvn test
+        run: mvn -B test
 
       - name: Upload Test Results
         if: always()
