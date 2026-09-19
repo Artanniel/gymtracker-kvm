@@ -1,0 +1,25 @@
+CREATE TABLE student_feedback (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    studentId   INTEGER NOT NULL,
+    sessionId   INTEGER NOT NULL,
+    rating      INTEGER NOT NULL DEFAULT 3,
+    message     TEXT NOT NULL DEFAULT '',
+    createdAt   INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000),
+    FOREIGN KEY (studentId) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (sessionId) REFERENCES workout_sessions(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_student_feedback_student ON student_feedback(studentId);
+
+getByStudent:
+SELECT * FROM student_feedback WHERE studentId = ? ORDER BY createdAt DESC;
+
+getBySession:
+SELECT * FROM student_feedback WHERE sessionId = ?;
+
+insert:
+INSERT INTO student_feedback (studentId, sessionId, rating, message)
+VALUES (?, ?, ?, ?);
+
+lastInsertId:
+SELECT last_insert_rowid();

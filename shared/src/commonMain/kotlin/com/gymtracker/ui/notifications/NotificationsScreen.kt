@@ -29,6 +29,7 @@ import kotlinx.datetime.Clock
 @Composable
 fun NotificationsScreen(
     onBack: () -> Unit,
+    onSettings: () -> Unit = {},
     viewModel: NotificationsViewModel = viewModel { NotificationsViewModel() }
 ) {
     val notifications by viewModel.notifications.collectAsState()
@@ -61,6 +62,9 @@ fun NotificationsScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = onSettings) {
+                        Icon(Icons.Filled.Settings, contentDescription = "Configurações")
+                    }
                     if (unreadCount > 0) {
                         TextButton(onClick = { viewModel.markAllAsRead() }) {
                             Text("Marcar como lidas")

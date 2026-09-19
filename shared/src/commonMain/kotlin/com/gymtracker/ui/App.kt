@@ -21,8 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gymtracker.AppDependencies
 import com.gymtracker.ui.animations.*
-import com.gymtracker.ui.ads.StrategicAdPlacement
-import com.gymtracker.ui.ads.AdPosition
 import com.gymtracker.ui.diet.DietScreen
 import com.gymtracker.ui.history.HistoryScreen
 import com.gymtracker.ui.home.HomeScreen
@@ -31,13 +29,18 @@ import com.gymtracker.ui.progress.ProgressViewModel
 import com.gymtracker.ui.settings.SettingsScreen
 import com.gymtracker.ui.sync.SyncStatusScreen
 import com.gymtracker.ui.workout.WorkoutSessionScreen
-
 import com.gymtracker.ui.auth.LoginScreen
 import com.gymtracker.ui.auth.RegisterScreen
+import com.gymtracker.ui.auth.AuthViewModel
 import com.gymtracker.ui.onboarding.OnboardingScreen
 import com.gymtracker.ui.onboarding.UserProfile
 import com.gymtracker.ui.notifications.NotificationsScreen
+import com.gymtracker.ui.notifications.NotificationSettingsScreen
 import com.gymtracker.ui.splash.SplashScreen
+import com.gymtracker.ui.students.StudentsScreen
+import com.gymtracker.ui.students.StudentDetailScreen
+import com.gymtracker.ui.videos.VideoLibraryScreen
+import com.gymtracker.ui.finance.FinanceScreen
 import com.gymtracker.ui.theme.FitTrackTheme
 
 enum class Screen { HOME, HISTORY, DIET, PROGRESS }
@@ -45,6 +48,7 @@ enum class AppState { SPLASH, LOGIN, REGISTER, ONBOARDING, AUTHENTICATED }
 
 private val screens = Screen.entries
 
+@Suppress("CyclomaticComplexMethod", "LongMethod")
 @Composable
 fun App() {
     var appState by remember { mutableStateOf(AppState.SPLASH) }
@@ -54,10 +58,29 @@ fun App() {
     var showSettings by remember { mutableStateOf(false) }
     var showNotifications by remember { mutableStateOf(false) }
     var showSync by remember { mutableStateOf(false) }
+    var showStudents by remember { mutableStateOf(false) }
+    var showVideos by remember { mutableStateOf(false) }
+    var showFinance by remember { mutableStateOf(false) }
+    var showNotificationSettings by remember { mutableStateOf(false) }
+    var activeStudentId by remember { mutableStateOf<Long?>(null) }
     var userProfile by remember { mutableStateOf(UserProfile()) }
-    
-    // Sync state
+
     val pendingCount by AppDependencies.syncManager.pendingCount.collectAsState()
+
+    val authViewModel = remember { AuthViewModel(AppDependencies.authRepository) }
+    val authState by AppDependencies.authRepository.isLoggedIn.collectAsState()
+
+    LaunchedEffect(Unit) {
+        if (AppDependencies.authRepository.restoreSession()) {
+            appState = AppState.AUTHENTICATED
+        }
+    }
+
+    LaunchedEffect(authState) {
+        if (authState && appState != AppState.AUTHENTICATED) {
+            appState = AppState.AUTHENTICATED
+        }
+    }
 
     FitTrackTheme {
         AnimatedContent(
@@ -73,6 +96,9 @@ fun App() {
                     targetState == AppState.AUTHENTICATED && initialState == AppState.ONBOARDING -> {
                         slideInFromRight() + fadeIn() togetherWith slideOutToLeft() + fadeOut()
                     }
+                    targetState == AppState.AUTHENTICATED && initialState == AppState.SPLASH -> {
+                        slideInFromRight() + fadeIn() togetherWith slideOutToLeft() + fadeOut()
+                    }
                     targetState == AppState.LOGIN && initialState == AppState.AUTHENTICATED -> {
                         slideInFromLeft() + fadeIn() togetherWith slideOutToRight() + fadeOut()
                     }
@@ -86,17 +112,25 @@ fun App() {
             when (state) {
                 AppState.SPLASH -> {
                     SplashScreen(
-                        onSplashFinished = { appState = AppState.LOGIN }
+                        onSplashFinished = {
+                            appState = if (AppDependencies.authRepository.hasStoredToken()) {
+                                AppState.AUTHENTICATED
+                            } else {
+                                AppState.LOGIN
+                            }
+                        }
                     )
                 }
                 AppState.LOGIN -> {
                     LoginScreen(
+                        authViewModel = authViewModel,
                         onLoginSuccess = { appState = AppState.ONBOARDING },
                         onNavigateToRegister = { appState = AppState.REGISTER }
                     )
                 }
                 AppState.REGISTER -> {
                     RegisterScreen(
+                        authViewModel = authViewModel,
                         onRegisterSuccess = { appState = AppState.ONBOARDING },
                         onNavigateBack = { appState = AppState.LOGIN }
                     )
@@ -116,8 +150,30 @@ fun App() {
                             connectivityMonitor = AppDependencies.connectivityMonitor,
                             onBack = { showSync = false }
                         )
+                    } else if (showStudents) {
+                        if (activeStudentId != null) {
+                            StudentDetailScreen(
+                                studentId = activeStudentId!!,
+                                onBack = { activeStudentId = null },
+                                onDeleted = { activeStudentId = null; showStudents = false }
+                            )
+                        } else {
+                            StudentsScreen(
+                                onBack = { showStudents = false },
+                                onViewStudent = { activeStudentId = it }
+                            )
+                        }
+                    } else if (showVideos) {
+                        VideoLibraryScreen(onBack = { showVideos = false })
+                    } else if (showFinance) {
+                        FinanceScreen(onBack = { showFinance = false })
                     } else if (showNotifications) {
-                        NotificationsScreen(onBack = { showNotifications = false })
+                        NotificationsScreen(
+                            onBack = { showNotifications = false },
+                            onSettings = { showNotificationSettings = true }
+                        )
+                    } else if (showNotificationSettings) {
+                        NotificationSettingsScreen(onBack = { showNotificationSettings = false })
                     } else if (showSettings) {
                         SettingsScreen(onBack = { showSettings = false })
                     } else if (activeExerciseIdForProgress != null) {
@@ -205,6 +261,9 @@ fun App() {
                                                 onSettings = { showSettings = true },
                                                 onNotifications = { showNotifications = true },
                                                 onSync = { showSync = true },
+                                                onStudents = { showStudents = true },
+                                                onVideos = { showVideos = true },
+                                                onFinance = { showFinance = true },
                                                 pendingSyncCount = pendingCount
                                             )
                                             Screen.HISTORY -> HistoryScreen(
@@ -224,11 +283,10 @@ fun App() {
     }
 }
 
-
 @Composable
 fun gymColorScheme() = lightColorScheme(
-    primary   = androidx.compose.ui.graphics.Color(0xFF1E9E3E),
+    primary = androidx.compose.ui.graphics.Color(0xFF1E9E3E),
     secondary = androidx.compose.ui.graphics.Color(0xFF5C8DD6),
-    error     = androidx.compose.ui.graphics.Color(0xFFE8362D),
+    error = androidx.compose.ui.graphics.Color(0xFFE8362D),
     background = androidx.compose.ui.graphics.Color(0xFFF5F7F5)
 )

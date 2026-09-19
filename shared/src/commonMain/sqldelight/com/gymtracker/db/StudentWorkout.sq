@@ -1,0 +1,25 @@
+CREATE TABLE student_workouts (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    studentId   INTEGER NOT NULL,
+    workoutId   TEXT NOT NULL,
+    assignedAt  INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000),
+    FOREIGN KEY (studentId) REFERENCES students(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_student_workouts_student ON student_workouts(studentId);
+
+getByStudent:
+SELECT * FROM student_workouts WHERE studentId = ?;
+
+getByWorkout:
+SELECT * FROM student_workouts WHERE workoutId = ?;
+
+insert:
+INSERT INTO student_workouts (studentId, workoutId)
+VALUES (?, ?);
+
+delete:
+DELETE FROM student_workouts WHERE studentId = ? AND workoutId = ?;
+
+deleteByStudent:
+DELETE FROM student_workouts WHERE studentId = ?;

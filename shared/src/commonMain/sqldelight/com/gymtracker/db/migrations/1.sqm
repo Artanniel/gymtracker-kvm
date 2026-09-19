@@ -1,0 +1,85 @@
+CREATE TABLE students (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name        TEXT NOT NULL,
+    email       TEXT,
+    phone       TEXT,
+    birthDate   INTEGER,
+    notes       TEXT NOT NULL DEFAULT '',
+    isActive    INTEGER NOT NULL DEFAULT 1,
+    createdAt   INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000),
+    updatedAt   INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)
+);
+
+CREATE INDEX idx_students_name ON students(name);
+
+CREATE TABLE student_workouts (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    studentId   INTEGER NOT NULL,
+    workoutId   TEXT NOT NULL,
+    assignedAt  INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000),
+    FOREIGN KEY (studentId) REFERENCES students(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_student_workouts_student ON student_workouts(studentId);
+
+CREATE TABLE student_feedback (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    studentId   INTEGER NOT NULL,
+    sessionId   INTEGER NOT NULL,
+    rating      INTEGER NOT NULL DEFAULT 3,
+    message     TEXT NOT NULL DEFAULT '',
+    createdAt   INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000),
+    FOREIGN KEY (studentId) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (sessionId) REFERENCES workout_sessions(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_student_feedback_student ON student_feedback(studentId);
+
+CREATE TABLE exercise_videos (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    exerciseId  TEXT NOT NULL,
+    title       TEXT NOT NULL,
+    url         TEXT NOT NULL,
+    thumbnailUrl TEXT,
+    duration    INTEGER,
+    description TEXT,
+    muscleGroup TEXT NOT NULL,
+    category    TEXT NOT NULL,
+    isCustom    INTEGER NOT NULL DEFAULT 0,
+    createdAt   INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)
+);
+
+CREATE INDEX idx_exercise_videos_exercise ON exercise_videos(exerciseId);
+CREATE INDEX idx_exercise_videos_muscle ON exercise_videos(muscleGroup);
+CREATE INDEX idx_exercise_videos_category ON exercise_videos(category);
+
+CREATE TABLE payment_plans (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name        TEXT NOT NULL,
+    description TEXT,
+    durationMonths INTEGER NOT NULL DEFAULT 1,
+    price       REAL NOT NULL,
+    currency    TEXT NOT NULL DEFAULT 'BRL',
+    recurrence  TEXT NOT NULL DEFAULT 'monthly',
+    isActive    INTEGER NOT NULL DEFAULT 1,
+    createdAt   INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)
+);
+
+CREATE TABLE invoices (
+    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    studentId   INTEGER NOT NULL,
+    planId      INTEGER,
+    amount      REAL NOT NULL,
+    currency    TEXT NOT NULL DEFAULT 'BRL',
+    dueDate     INTEGER NOT NULL,
+    paidAt      INTEGER,
+    status      TEXT NOT NULL DEFAULT 'pending',
+    description TEXT,
+    paymentMethod TEXT,
+    createdAt   INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000),
+    FOREIGN KEY (studentId) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (planId) REFERENCES payment_plans(id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_invoices_student ON invoices(studentId);
+CREATE INDEX idx_invoices_status ON invoices(status);

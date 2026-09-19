@@ -47,6 +47,7 @@ jobs:
   test-backend:
     name: Backend Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -55,10 +56,11 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
+          cache: 'maven'
 
       - name: Run Maven Tests
         working-directory: backend
-        run: mvn test
+        run: mvn -B test
 
       - name: Upload Test Results
         if: always()
@@ -104,12 +106,21 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Cache OWASP dependency-check data
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: ${{ runner.os }}-owasp-data-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-owasp-data-
 
       # OWASP Dependency Check (Maven backend)
       - name: Run OWASP Dependency Check
         working-directory: backend
         continue-on-error: true
-        run: mvn dependency-check:check -Ddependency-check.format=HTML,JSON
+        run: mvn -B dependency-check:check -Ddependency-check.format=HTML,JSON
 
       - name: Upload OWASP Report
         if: always()
@@ -230,4 +241,22 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: '## ✅ Deploy Ready\n\nAll quality and security checks passed:\n\n| Check | Status |\n|-------|--------|\n| Detekt (Lint) | ✅ Passed |\n| Backend Tests | ✅ Passed |\n| KMP Compile | ✅ Passed |\n| OWASP Dependency Check | ✅ Passed |\n| Semgrep SAST | ✅ Passed |\n| Trivy Container Scan | ✅ Passed |\n\n🚀 **Deploy can be performed.**'
+            })
+
+  # ── 8. Failure Notification ───────────────────────────────────
+  notify-failure:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: [lint, test-backend, compile-kmp, security, container-security, build]
+    if: failure() && github.event_name == 'pull_request'
+    steps:
+      - name: Comment failure on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## ❌ CI Pipeline Failed\n\nOne or more checks failed. Please review the logs and fix the issues before merging.\n\n🔗 [View workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})'
             })
