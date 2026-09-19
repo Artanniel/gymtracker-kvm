@@ -9,6 +9,9 @@ on:
     branches: [main, develop]
     paths:
       - 'backend/**'
+  # Permite disparar manualmente (ex.: semear a primeira imagem no GHCR antes
+  # do merge, ou re-rodar o deploy sem precisar de um novo commit em main).
+  workflow_dispatch: {}
 
 jobs:
   build-backend:
