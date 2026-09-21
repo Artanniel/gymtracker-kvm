@@ -57,7 +57,7 @@ dependencies {
     // Force OkHttp 4.x to avoid okhttp-android 5.5.0 requiring compileSdk 37
     configurations.all {
         resolutionStrategy {
-            force("com.squareup.okhttp3:okhttp:4.12.0")
+            force("com.squareup.okhttp3:okhttp:5.5.0")
         }
     }
 }
