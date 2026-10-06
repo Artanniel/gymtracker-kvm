@@ -23,10 +23,10 @@ kotlin {
 // evitando UnsatisfiedLinkError causado por mismatch entre versões.
 configurations.all {
     resolutionStrategy {
-        force("org.jetbrains.skiko:skiko-awt-runtime-linux-x64:0.9.4.2")
-        force("org.jetbrains.skiko:skiko-awt-runtime-linux-arm64:0.9.4.2")
-        force("org.jetbrains.skiko:skiko:0.9.4.2")
-        force("org.jetbrains.skiko:skiko-awt:0.9.4.2")
+        force("org.jetbrains.skiko:skiko-awt-runtime-linux-x64:0.150.1")
+        force("org.jetbrains.skiko:skiko-awt-runtime-linux-arm64:0.150.1")
+        force("org.jetbrains.skiko:skiko:0.150.1")
+        force("org.jetbrains.skiko:skiko-awt:0.150.1")
     }
 }
 
