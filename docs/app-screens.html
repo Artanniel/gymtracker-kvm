@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymTracker - Telas do App</title>
+    <style>
+        :root {
+            --primary: #1E9E3E;
+            --primary-dark: #168a33;
+            --secondary: #5C8DD6;
+            --background: #F5F7F5;
+            --surface: #FFFFFF;
+            --text: #1a1c1a;
+            --text-secondary: #5f635f;
+            --error: #E8362D;
+            --border: #e0e4e0;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        header p { font-size: 1.1rem; opacity: 0.95; }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .intro {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+        .screens-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+        .screen-card {
+            background: var(--surface);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+        }
+        .screen-card:hover { transform: translateY(-4px); }
+        .screen-header {
+            background: var(--background);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .phone {
+            width: 100%;
+            max-width: 360px;
+            margin: 0 auto;
+            background: var(--surface);
+            min-height: 640px;
+            display: flex;
+            flex-direction: column;
+        }
+        .status-bar {
+            height: 24px;
+            background: var(--surface);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 0.7rem;
+            color: var(--text);
+        }
+        .app-bar {
+            background: var(--surface);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .app-bar h2 { font-size: 1.1rem; flex: 1; }
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--background);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .content {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+        .bottom-nav {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 12px;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+        .nav-item.active { color: var(--primary); }
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0.2;
+        }
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+        }
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            background: var(--surface);
+        }
+        .label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            display: block;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .card-title { font-weight: 600; margin-bottom: 4px; }
+        .card-subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+        .metric-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .metric {
+            background: var(--background);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        .workout-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .workout-card h3 { font-size: 1.3rem; margin-bottom: 8px; }
+        .workout-card p { opacity: 0.9; font-size: 0.9rem; }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            background: var(--background);
+            color: var(--text-secondary);
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+        .chip.primary { background: var(--primary); color: white; }
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .list-item:last-child { border-bottom: none; }
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--secondary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        .splash {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            min-height: 640px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+        .splash-icon {
+            width: 120px;
+            height: 120px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            margin-bottom: 24px;
+        }
+        .splash h1 { font-size: 2.2rem; margin-bottom: 12px; }
+        .splash p { opacity: 0.9; }
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--background);
+            border: none;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+        .tab.active { background: var(--primary); color: white; }
+        .progress-bar {
+            height: 8px;
+            background: var(--background);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            background: var(--error);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.65rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .notification-item {
+            display: flex;
+            gap: 12px;
+            padding: 14px;
+            background: var(--background);
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        .toggle {
+            width: 48px;
+            height: 26px;
+            background: var(--primary);
+            border-radius: 13px;
+            position: relative;
+            margin-left: auto;
+        }
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            right: 2px;
+        }
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {
+            .screens-grid { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏋️‍♂️ GymTracker</h1>
+        <p>Galeria completa das telas do aplicativo</p>
+    </header>
+
+    <div class="container">
+        <div class="intro">
+            <h2>Sobre este documento</h2>
+            <p>Este HTML apresenta todas as telas principais do GymTracker em formato de mockups responsivos. As telas refletem o design atual do app construído com Compose Multiplatform, incluindo as funcionalidades de autenticação, treinos, alunos, vídeos, financeiro e notificações.</p>
+        </div>
+
+        <div class="screens-grid">
+            <div class="screen-card">
+                <div class="screen-header">Splash Screen</div>
+                <div class="phone">
+                    <div class="splash">
+                        <div class="splash-icon">💪</div>
+                        <h1>GymTracker</h1>
+                        <p>Seu parceiro definitivo para treinos e dieta</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Login</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="content" style="padding-top: 60px;">
+                        <h2 style="text-align: center; margin-bottom: 8px;">Bem-vindo de volta! 💪</h2>
+                        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 32px;">Entre para continuar seus treinos</p>
+                        <label class="label">E-mail</label>
+                        <input class="input" type="email" placeholder="seu@email.com" value="usuario@email.com">
+                        <label class="label">Senha</label>
+                        <input class="input" type="password" placeholder="••••••••" value="********">
+                        <button class="btn">Entrar</button>
+                        <button class="btn btn-secondary">Criar conta</button>
+                        <p style="text-align: center; margin-top: 20px; color: var(--text-secondary); font-size: 0.9rem;">Esqueceu a senha?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Cadastro</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="app-bar">
+                        <button class="icon-btn">←</button>
+                        <h2>Criar conta</h2>
+                    </div>
+                    <div class="content">
+                        <label class="label">Nome completo</label>
+                        <input class="input" placeholder="João Silva">
+                        <label class="label">E-mail</label>
+                        <input class="input" type="email" placeholder="seu@email.com">
+                        <label class="label">Senha</label>
+                        <input class="input" type="password" placeholder="Mínimo 8 caracteres">
+                        <label class="label">Confirmar senha</label>
+                        <input class="input" type="password" placeholder="Repita a senha">
+                        <button class="btn">Cadastrar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Onboarding</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="content" style="text-align: center; padding-top: 60px;">
+                        <div style="width: 200px; height: 200px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 24px; margin: 0 auto 32px; display: flex; align-items: center; justify-content: center; font-size: 5rem;">🎯</div>
+                        <h2 style="margin-bottom: 12px;">Defina suas metas</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 40px;">Estabeleça objetivos de peso, frequência de treinos e conquiste badges</p>
+                        <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 32px;">
+                            <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--border);"></span>
+                            <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--border);"></span>
+                            <span style="width: 24px; height: 8px; border-radius: 4px; background: var(--primary);"></span>
+                            <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--border);"></span>
+                        </div>
+                        <button class="btn">Próximo</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Home</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="app-bar">
+                        <div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">Olá,</div>
+                            <div style="font-weight: 700;">João 👋</div>
+                        </div>
+                        <div style="flex: 1;"></div>
+                        <button class="icon-btn" style="position: relative;">🔔<span class="badge">2</span></button>
+                        <button class="icon-btn">⚙️</button>
+                    </div>
+                    <div class="content">
+                        <div class="metric-row">
+                            <div class="metric">
+                                <div class="metric-value">12</div>
+                                <div class="metric-label">Treinos</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">7</div>
+                                <div class="metric-label">Dias seguidos</div>
+                            </div>
+                        </div>
+                        <div class="workout-card">
+                            <h3>Treino de Peito e Tríceps</h3>
+                            <p>Último treino: Ontem · 45 min · 1.200 kg total</p>
+                            <button class="btn" style="margin-top: 16px; background: rgba(255,255,255,0.2);">Iniciar novamente</button>
+                        </div>
+                        <h3 style="margin: 20px 0 12px;">Próximos treinos</h3>
+                        <div class="card">
+                            <div class="card-title">Costas e Bíceps</div>
+                            <div class="card-subtitle">Hoje · 50 min</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Pernas</div>
+                            <div class="card-subtitle">Amanhã · 60 min</div>
+                        </div>
+                    </div>
+                    <div class="bottom-nav">
+                        <div class="nav-item active"><div class="nav-icon"></div>Treinos</div>
+                        <div class="nav-item"><div class="nav-icon"></div>Histórico</div>
+                        <div class="nav-item"><div class="nav-icon"></div>Dieta</div>
+                        <div class="nav-item"><div class="nav-icon"></div>Progresso</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Sessão de Treino</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="app-bar">
+                        <button class="icon-btn">←</button>
+                        <h2>Peito e Tríceps</h2>
+                        <button class="icon-btn">✓</button>
+                    </div>
+                    <div class="content">
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="card-title">Supino Reto</div>
+                                    <div class="card-subtitle">3 séries · 8-12 reps</div>
+                                </div>
+                                <span class="chip primary">Em andamento</span>
+                            </div>
+                            <div style="margin-top: 16px;">
+                                <div class="list-item" style="padding: 8px 0;">
+                                    <span>Série 1</span>
+                                    <span style="margin-left: auto; color: var(--text-secondary);">60 kg × 10</span>
+                                    <span style="color: var(--primary); margin-left: 12px;">✓</span>
+                                </div>
+                                <div class="list-item" style="padding: 8px 0;">
+                                    <span>Série 2</span>
+                                    <span style="margin-left: auto; color: var(--text-secondary);">65 kg × 8</span>
+                                    <span style="color: var(--primary); margin-left: 12px;">✓</span>
+                                </div>
+                                <div class="list-item" style="padding: 8px 0; border: 2px dashed var(--primary); border-radius: 12px; padding: 12px;">
+                                    <span>Série 3</span>
+                                    <input style="width: 60px; padding: 8px; border: 1px solid var(--border); border-radius: 8px;" placeholder="kg">
+                                    <span>×</span>
+                                    <input style="width: 50px; padding: 8px; border: 1px solid var(--border); border-radius: 8px;" placeholder="reps">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="opacity: 0.7;">
+                            <div class="card-title">Crucifixo</div>
+                            <div class="card-subtitle">3 séries · 12 reps</div>
+                        </div>
+                        <button class="btn">Adicionar exercício</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Histórico</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="app-bar">
+                        <h2>Histórico</h2>
+                    </div>
+                    <div class="content">
+                        <div class="tabs">
+                            <button class="tab active">Todos</button>
+                            <button class="tab">Essa semana</button>
+                            <button class="tab">Mês</button>
+                        </div>
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <div class="card-title">Peito e Tríceps</div>
+                                    <div class="card-subtitle">18 set · 45 min</div>
+                                </div>
+                                <span style="font-weight: 700; color: var(--primary);">1.200 kg</span>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <div class="card-title">Costas e Bíceps</div>
+                                    <div class="card-subtitle">17 set · 50 min</div>
+                                </div>
+                                <span style="font-weight: 700; color: var(--primary);">1.450 kg</span>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <div class="card-title">Pernas</div>
+                                    <div class="card-subtitle">15 set · 60 min</div>
+                                </div>
+                                <span style="font-weight: 700; color: var(--primary);">2.100 kg</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Dieta</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="app-bar">
+                        <h2>Dieta</h2>
+                    </div>
+                    <div class="content">
+                        <div class="metric-row">
+                            <div class="metric">
+                                <div class="metric-value">1.850</div>
+                                <div class="metric-label">kcal consumidas</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">350</div>
+                                <div class="metric-label">kcal restantes</div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                                <span>Proteínas</span>
+                                <span style="font-weight: 600;">120/160g</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill" style="width: 75%;"></div></div>
+                        </div>
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                                <span>Carboidratos</span>
+                                <span style="font-weight: 600;">180/250g</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill" style="width: 72%;"></div></div>
+                        </div>
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                                <span>Gorduras</span>
+                                <span style="font-weight: 600;">45/70g</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill" style="width: 64%;"></div></div>
+                        </div>
+                        <h3 style="margin-top: 20px; margin-bottom: 12px;">Refeições</h3>
+                        <div class="card">
+                            <div class="card-title">Café da manhã</div>
+                            <div class="card-subtitle">Aveia, banana e whey · 450 kcal</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Almoço</div>
+                            <div class="card-subtitle">Arroz, frango e salada · 650 kcal</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Progresso</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="app-bar">
+                        <h2>Progresso</h2>
+                    </div>
+                    <div class="content">
+                        <div class="card">
+                            <div class="card-title">Peso corporal</div>
+                            <div style="height: 120px; background: var(--background); border-radius: 12px; margin-top: 12px; display: flex; align-items: flex-end; justify-content: space-around; padding: 16px;">
+                                <div style="width: 24px; height: 60%; background: var(--secondary); border-radius: 4px;"></div>
+                                <div style="width: 24px; height: 70%; background: var(--secondary); border-radius: 4px;"></div>
+                                <div style="width: 24px; height: 65%; background: var(--secondary); border-radius: 4px;"></div>
+                                <div style="width: 24px; height: 55%; background: var(--primary); border-radius: 4px;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.8rem; color: var(--text-secondary);">
+                                <span>Jun</span><span>Jul</span><span>Ago</span><span>Set</span>
+                            </div>
+                        </div>
+                        <h3 style="margin-top: 20px; margin-bottom: 12px;">Exercícios</h3>
+                        <div class="list-item">
+                            <div class="avatar">S</div>
+                            <div>
+                                <div class="card-title">Supino reto</div>
+                                <div class="card-subtitle">60 kg → 80 kg</div>
+                            </div>
+                        </div>
+                        <div class="list-item">
+                            <div class="avatar">A</div>
+                            <div>
+                                <div class="card-title">Agachamento</div>
+                                <div class="card-subtitle">80 kg → 120 kg</div>
+                            </div>
+                        </div>
+                        <div class="list-item">
+                            <div class="avatar">L</div>
+                            <div>
+                                <div class="card-title">Levantamento terra</div>
+                                <div class="card-subtitle">100 kg → 140 kg</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Alunos</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="app-bar">
+                        <h2>Meus Alunos</h2>
+                        <button class="icon-btn">+</button>
+                    </div>
+                    <div class="content">
+                        <input class="input" placeholder="Buscar aluno...">
+                        <div class="list-item">
+                            <div class="avatar">MA</div>
+                            <div style="flex: 1;">
+                                <div class="card-title">Maria Andrade</div>
+                                <div class="card-subtitle">Ativo · Treino: HIIT</div>
+                            </div>
+                            <span style="color: var(--primary); font-weight: 600;">></span>
+                        </div>
+                        <div class="list-item">
+                            <div class="avatar">CS</div>
+                            <div style="flex: 1;">
+                                <div class="card-title">Carlos Silva</div>
+                                <div class="card-subtitle">Ativo · Treino: Hipertrofia</div>
+                            </div>
+                            <span style="color: var(--primary); font-weight: 600;">></span>
+                        </div>
+                        <div class="list-item">
+                            <div class="avatar">FO</div>
+                            <div style="flex: 1;">
+                                <div class="card-title">Fernanda Oliveira</div>
+                                <div class="card-subtitle">Inativo</div>
+                            </div>
+                            <span style="color: var(--primary); font-weight: 600;">></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Detalhes do Aluno</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="app-bar">
+                        <button class="icon-btn">←</button>
+                        <h2>Maria Andrade</h2>
+                        <button class="icon-btn">✏️</button>
+                    </div>
+                    <div class="content">
+                        <div style="text-align: center; margin-bottom: 24px;">
+                            <div class="avatar" style="width: 80px; height: 80px; font-size: 1.5rem; margin: 0 auto 12px;">MA</div>
+                            <h3>Maria Andrade</h3>
+                            <p style="color: var(--text-secondary);">maria@email.com</p>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric">
+                                <div class="metric-value">24</div>
+                                <div class="metric-label">Treinos</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">4.8</div>
+                                <div class="metric-label">Avaliação</div>
+                            </div>
+                        </div>
+                        <h3 style="margin: 20px 0 12px;">Treinos vinculados</h3>
+                        <div class="card">
+                            <div class="card-title">HIIT Avançado</div>
+                            <div class="card-subtitle">Vinculado em 15 set</div>
+                        </div>
+                        <h3 style="margin: 20px 0 12px;">Feedback</h3>
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>⭐⭐⭐⭐⭐</span>
+                                <span style="color: var(--text-secondary); font-size: 0.8rem;">17 set</span>
+                            </div>
+                            <p style="margin-top: 8px; color: var(--text-secondary);">Treino intenso, mas estou sentindo ótimos resultados!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Biblioteca de Vídeos</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="app-bar">
+                        <button class="icon-btn">←</button>
+                        <h2>Biblioteca de Vídeos</h2>
+                        <button class="icon-btn">+</button>
+                    </div>
+                    <div class="content">
+                        <div class="tabs">
+                            <button class="tab active">Todos</button>
+                            <button class="tab">Peito</button>
+                            <button class="tab">Costas</button>
+                            <button class="tab">Pernas</button>
+                        </div>
+                        <div class="card" style="padding: 0; overflow: hidden;">
+                            <div style="height: 140px; background: linear-gradient(135deg, #333, #555); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">▶️</div>
+                            <div style="padding: 16px;">
+                                <div class="card-title">Supino reto perfeito</div>
+                                <div class="card-subtitle">Peito · 4 min</div>
+                            </div>
+                        </div>
+                        <div class="card" style="padding: 0; overflow: hidden;">
+                            <div style="height: 140px; background: linear-gradient(135deg, #333, #555); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">▶️</div>
+                            <div style="padding: 16px;">
+                                <div class="card-title">Agachamento livre</div>
+                                <div class="card-subtitle">Pernas · 5 min</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Financeiro</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="app-bar">
+                        <button class="icon-btn">←</button>
+                        <h2>Financeiro</h2>
+                        <button class="icon-btn">+</button>
+                    </div>
+                    <div class="content">
+                        <div class="metric-row">
+                            <div class="metric">
+                                <div class="metric-value">R$ 3.200</div>
+                                <div class="metric-label">Receita do mês</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">R$ 800</div>
+                                <div class="metric-label">Pendente</div>
+                            </div>
+                        </div>
+                        <h3 style="margin: 20px 0 12px;">Planos</h3>
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <div class="card-title">Plano Mensal</div>
+                                    <div class="card-subtitle">Acesso completo</div>
+                                </div>
+                                <span style="font-weight: 700; color: var(--primary);">R$ 150/mês</span>
+                            </div>
+                        </div>
+                        <h3 style="margin: 20px 0 12px;">Faturas pendentes</h3>
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="card-title">Maria Andrade</div>
+                                    <div class="card-subtitle">Vencimento: 20 set</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 700;">R$ 150</div>
+                                    <span class="chip" style="background: #fff3e0; color: #e65100;">Pendente</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Notificações</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="app-bar">
+                        <button class="icon-btn">←</button>
+                        <h2>Notificações</h2>
+                        <button class="icon-btn">⚙️</button>
+                    </div>
+                    <div class="content">
+                        <div class="notification-item">
+                            <div style="font-size: 1.5rem;">💪</div>
+                            <div>
+                                <div style="font-weight: 600;">Hora do treino!</div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary);">Seu treino de peito está agendado para 18h</div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Há 2 horas</div>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div style="font-size: 1.5rem;">💧</div>
+                            <div>
+                                <div style="font-weight: 600;">Lembrete de hidratação</div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary);">Beba mais 300ml de água</div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Há 4 horas</div>
+                            </div>
+                        </div>
+                        <div class="notification-item" style="opacity: 0.6;">
+                            <div style="font-size: 1.5rem;">🏆</div>
+                            <div>
+                                <div style="font-weight: 600;">Novo badge conquistado!</div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary);">7 dias seguidos de treino</div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Ontem</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Configurações de Notificações</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="app-bar">
+                        <button class="icon-btn">←</button>
+                        <h2>Notificações</h2>
+                    </div>
+                    <div class="content">
+                        <div class="setting-row">
+                            <div>
+                                <div style="font-weight: 600;">Lembretes de treino</div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary);">Notifique antes dos treinos agendados</div>
+                            </div>
+                            <div class="toggle"></div>
+                        </div>
+                        <div class="setting-row">
+                            <div>
+                                <div style="font-weight: 600;">Hidratação</div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary);">Lembretes periódicos para beber água</div>
+                            </div>
+                            <div class="toggle"></div>
+                        </div>
+                        <div class="setting-row">
+                            <div>
+                                <div style="font-weight: 600;">Conquistas</div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary);">Notificações de badges e streaks</div>
+                            </div>
+                            <div class="toggle" style="background: var(--border);"></div>
+                        </div>
+                        <div class="setting-row">
+                            <div>
+                                <div style="font-weight: 600;">Sincronização</div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary);">Alertas de conflitos de sync</div>
+                            </div>
+                            <div class="toggle"></div>
+                        </div>
+                        <h3 style="margin-top: 24px; margin-bottom: 12px;">Horários</h3>
+                        <div class="card">
+                            <div class="card-title">Lembrete de treino</div>
+                            <div class="card-subtitle">Todos os dias às 18:00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Configurações</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="app-bar">
+                        <button class="icon-btn">←</button>
+                        <h2>Configurações</h2>
+                    </div>
+                    <div class="content">
+                        <div class="setting-row">
+                            <div style="font-weight: 600;">Editar perfil</div>
+                            <span>></span>
+                        </div>
+                        <div class="setting-row">
+                            <div style="font-weight: 600;">URL do backend</div>
+                            <span>></span>
+                        </div>
+                        <div class="setting-row">
+                            <div style="font-weight: 600;">Sincronização</div>
+                            <span>></span>
+                        </div>
+                        <div class="setting-row">
+                            <div style="font-weight: 600;">Notificações</div>
+                            <span>></span>
+                        </div>
+                        <div class="setting-row">
+                            <div style="font-weight: 600;">Tema</div>
+                            <span>Claro ></span>
+                        </div>
+                        <div class="setting-row">
+                            <div style="font-weight: 600;">Idioma</div>
+                            <span>Português ></span>
+                        </div>
+                        <div class="setting-row">
+                            <div style="font-weight: 600;">Política de privacidade</div>
+                            <span>></span>
+                        </div>
+                        <div class="setting-row">
+                            <div style="font-weight: 600;">Termos de serviço</div>
+                            <span>></span>
+                        </div>
+                        <button class="btn" style="background: var(--error); margin-top: 32px;">Sair da conta</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screen-card">
+                <div class="screen-header">Status de Sincronização</div>
+                <div class="phone">
+                    <div class="status-bar"><span>9:41</span><span>🔋 100%</span></div>
+                    <div class="app-bar">
+                        <button class="icon-btn">←</button>
+                        <h2>Sync</h2>
+                    </div>
+                    <div class="content">
+                        <div style="text-align: center; margin-bottom: 24px;">
+                            <div style="width: 80px; height: 80px; background: #e8f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 12px;">✓</div>
+                            <h3 style="color: var(--primary);">Sincronizado</h3>
+                            <p style="color: var(--text-secondary);">Último sync: há 5 minutos</p>
+                        </div>
+                        <h3 style="margin-bottom: 12px;">Fila de sincronização</h3>
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="card-title">Sessão de treino</div>
+                                    <div class="card-subtitle">18 set, 18:30</div>
+                                </div>
+                                <span style="color: var(--primary);">✓</span>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="card-title">Atualização de peso</div>
+                                    <div class="card-subtitle">18 set, 08:00</div>
+                                </div>
+                                <span style="color: var(--primary);">✓</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline" style="margin-top: 16px;">Sincronizar agora</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>🏋️‍♂️ GymTracker - Telas do aplicativo</p>
+        <p style="margin-top: 8px;">Construído com ☕️ e Kotlin</p>
+    </footer>
+</body>
+</html>
