@@ -22,7 +22,8 @@
 
 4. **Política de Privacidade**
    - Arquivo: `PRIVACY_POLICY.md`
-   - Publique em uma URL pública (ex.: GitHub Pages, site do app) e informe o link no Console do Google Play.
+   - Publicada em: **https://artanniel.github.io/gymtracker-kvm/privacy-policy.html**
+   - URL pública para informar no Console do Google Play.
 
 ## 🎨 Assets da loja
 
