@@ -29,7 +29,8 @@ Baixe a versão mais recente diretamente:
 
 | Versão | Plataforma | Link | Tamanho |
 |---|---|---|---|
-| **v1.1.3** | 🤖 Android APK | [Baixar GymTracker-v1.1.3.apk](https://github.com/Artanniel/gymtracker-kvm/releases/latest/download/GymTracker-v1.1.3.apk) | ~13 MB |
+| **v1.1.4** | 🤖 Android APK | [Baixar GymTracker-v1.1.4.apk](https://github.com/Artanniel/gymtracker-kvm/releases/latest/download/GymTracker-v1.1.4.apk) | ~15 MB |
+| **v1.1.4** | 📦 Android App Bundle | [Baixar androidApp-release.aab](https://github.com/Artanniel/gymtracker-kvm/releases/latest/download/androidApp-release.aab) | ~15 MB |
 
 > 💡 A release mais recente sempre está disponível em [GitHub Releases](https://github.com/Artanniel/gymtracker-kvm/releases).
 
