@@ -107,15 +107,17 @@ Isso permite encontrar bugs antes da release pública.
 
 ## ⚠️ Checklist antes de publicar
 
-- [ ] Keystore salvo em local seguro
-- [ ] AAB gerado e assinado corretamente
-- [ ] Política de privacidade publicada online
-- [ ] Ícone, screenshots e feature graphic prontos
-- [ ] Descrição do app revisada
-- [ ] Testes internos realizados
+- [x] Keystore salvo em local seguro (`gymtracker-release-key.jks`)
+- [x] AAB gerado e assinado corretamente (release `v1.1.4`)
+- [x] APK de release disponível no GitHub Releases
+- [x] Política de privacidade publicada online: https://artanniel.github.io/gymtracker-kvm/privacy-policy.html
+- [x] Termos de serviço publicados online: https://artanniel.github.io/gymtracker-kvm/terms-of-service.html
+- [x] Ícone, screenshots e feature graphic prontos em `play-store-assets/`
+- [ ] Descrição do app revisada no Google Play Console
+- [ ] Testes internos realizados no Google Play Console
 - [ ] Classificação de conteúdo preenchida
 - [ ] Preço e países definidos
-- [ ] Termos de serviço (opcional, mas recomendado)
+- [ ] App enviado para revisão no Google Play Console
 
 ## 🔄 Atualizações futuras
 
